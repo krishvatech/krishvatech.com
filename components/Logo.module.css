@@ -1,0 +1,159 @@
+.logoLink {
+  text-decoration: none;
+  color: inherit;
+  transition: transform var(--animation-duration-fast) ease;
+}
+
+.logoLink:hover .logo {
+  transform: scale(1.02);
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3);
+  position: relative;
+  transition: all var(--animation-duration-normal) ease;
+}
+
+/* Icon Container */
+.iconContainer {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+/* Logo Image */
+.logoImage {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+/* Text Container */
+.textContainer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-1);
+}
+
+.primaryText {
+  font-family: var(--font-family-heading);
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-size: 200% 200%;
+  animation: gradientShift 4s ease-in-out infinite;
+  line-height: 1;
+}
+
+.techHighlight {
+  background: linear-gradient(135deg, var(--accent) 0%, var(--primary) 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+}
+
+.subtitle {
+  font-family: var(--font-family-base);
+  font-weight: 500;
+  color: var(--muted-foreground);
+  font-size: 0.65em;
+  letter-spacing: 0.8px;
+  line-height: 1;
+}
+
+/* Size Variants */
+.sm .iconContainer {
+  width: 24px;
+  height: 24px;
+  border-radius: var(--radius-sm);
+}
+
+.sm .primaryText {
+  font-size: 0.875rem;
+}
+
+.sm .subtitle {
+  font-size: 0.5rem;
+}
+
+.md .iconContainer {
+  width: 32px;
+  height: 32px;
+}
+
+.md .primaryText {
+  font-size: 1.125rem;
+}
+
+.md .subtitle {
+  font-size: 0.65rem;
+}
+
+.lg .iconContainer {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-lg);
+}
+
+.lg .primaryText {
+  font-size: 1.5rem;
+}
+
+.lg .subtitle {
+  font-size: 0.75rem;
+}
+
+/* Icon-only variant */
+.icon {
+  gap: 0;
+}
+
+.icon .iconContainer {
+  box-shadow: var(--shadow-lg);
+}
+
+/* Short variant - company name only */
+.short {
+  /* Uses default styles, no specific overrides needed */
+}
+
+/* Text gradient animation */
+@keyframes gradientShift {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .full .subtitle {
+    display: none;
+  }
+  
+  .full .textContainer {
+    gap: 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .logo {
+    gap: var(--spacing-2);
+  }
+  
+  .md .primaryText {
+    font-size: 1rem;
+  }
+}

@@ -1,0 +1,206 @@
+.pageContainer {
+  background-color: var(--background);
+  color: var(--foreground);
+}
+
+/* Hero Section */
+.hero {
+  text-align: center;
+  padding: var(--spacing-16) var(--spacing-8);
+  background-color: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+
+.heroContent {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.heroBreadcrumb {
+  font-family: var(--font-family-heading);
+  color: var(--primary);
+  font-weight: 600;
+  margin-bottom: var(--spacing-4);
+}
+
+.heroTitle {
+  font-family: var(--font-family-heading);
+  font-size: 2.75rem;
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  color: var(--surface-foreground);
+  margin-bottom: var(--spacing-4);
+}
+
+@media (min-width: 768px) {
+  .heroTitle {
+    font-size: 3.5rem;
+  }
+}
+
+.heroSubtitle {
+  font-size: 1.125rem;
+  line-height: 1.7;
+  color: var(--muted-foreground);
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+/* General Section Styles */
+.section {
+  padding: var(--spacing-16) var(--spacing-8);
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.sectionHeader {
+  text-align: center;
+  margin-bottom: var(--spacing-12);
+}
+
+.sectionTitle {
+  font-family: var(--font-family-heading);
+  font-size: 2.25rem;
+  font-weight: 600;
+  line-height: 1.2;
+  margin-bottom: var(--spacing-3);
+  color: var(--surface-foreground);
+}
+
+.sectionSubtitle {
+  font-size: 1.125rem;
+  color: var(--muted-foreground);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* Mission & Vision Section */
+.missionSection {
+  padding: var(--spacing-16) var(--spacing-8);
+  background-color: var(--background);
+}
+
+.missionGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--spacing-8);
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+@media (min-width: 768px) {
+  .missionGrid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.missionCard {
+  text-align: center;
+  padding: var(--spacing-8);
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+}
+
+.missionIcon {
+  color: var(--primary);
+  margin-bottom: var(--spacing-4);
+}
+
+.missionTitle {
+  font-family: var(--font-family-heading);
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: var(--spacing-3);
+}
+
+.missionText {
+  color: var(--muted-foreground);
+  line-height: 1.6;
+}
+
+
+
+/* Values Section */
+.valuesSection {
+  padding: var(--spacing-16) var(--spacing-8);
+  background-color: var(--surface);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+
+.valuesGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--spacing-8);
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+@media (min-width: 640px) {
+  .valuesGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.valueCard {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--spacing-3);
+  padding: var(--spacing-6);
+  border-radius: var(--radius-md);
+  transition: background-color var(--animation-duration-fast) ease;
+}
+
+.valueCard:hover {
+  background-color: color-mix(in srgb, var(--primary) 5%, transparent);
+}
+
+.valueIcon {
+  color: var(--primary);
+  background-color: color-mix(in srgb, var(--primary) 15%, transparent);
+  padding: var(--spacing-3);
+  border-radius: var(--radius-md);
+}
+
+.valueTitle {
+  font-family: var(--font-family-heading);
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.valueDescription {
+  color: var(--muted-foreground);
+  line-height: 1.6;
+}
+
+/* CTA Section */
+.ctaSection {
+  background-color: var(--background);
+  color: var(--foreground);
+  padding: var(--spacing-16) var(--spacing-8);
+  text-align: center;
+}
+
+.ctaContent {
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.ctaTitle {
+  font-family: var(--font-family-heading);
+  font-size: 2.25rem;
+  font-weight: 600;
+  line-height: 1.2;
+  margin-bottom: var(--spacing-4);
+}
+
+.ctaText {
+  font-size: 1.125rem;
+  line-height: 1.6;
+  color: var(--muted-foreground);
+  margin-bottom: var(--spacing-8);
+}
