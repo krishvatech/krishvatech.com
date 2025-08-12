@@ -1,0 +1,54 @@
+{
+  "computerVision": {
+    "image": "/vision/real1.png",
+    "boxes": [
+      {
+        "x": 0.14,
+        "y": 0.38,
+        "w": 0.2,
+        "h": 0.28,
+        "label": "Detection 97%"
+      },
+      {
+        "x": 0.52,
+        "y": 0.32,
+        "w": 0.22,
+        "h": 0.3,
+        "label": "Detection 91%"
+      },
+      {
+        "x": 0.78,
+        "y": 0.46,
+        "w": 0.16,
+        "h": 0.22,
+        "label": "Detection 88%"
+      }
+    ]
+  },
+  "demo": {
+    "image": "/vision/real2.png",
+    "boxes": [
+      {
+        "x": 0.18,
+        "y": 0.4,
+        "w": 0.18,
+        "h": 0.26,
+        "label": "Detection 95%"
+      },
+      {
+        "x": 0.44,
+        "y": 0.36,
+        "w": 0.22,
+        "h": 0.28,
+        "label": "Detection 90%"
+      },
+      {
+        "x": 0.72,
+        "y": 0.42,
+        "w": 0.18,
+        "h": 0.24,
+        "label": "Detection 93%"
+      }
+    ]
+  }
+}

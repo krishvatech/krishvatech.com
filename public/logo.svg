@@ -1,0 +1,13 @@
+<svg width="128" height="32" viewBox="0 0 256 64" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="g" x1="0" x2="1">
+      <stop offset="0%" stop-color="#38bdf8"/>
+      <stop offset="50%" stop-color="#a78bfa"/>
+      <stop offset="100%" stop-color="#34d399"/>
+    </linearGradient>
+  </defs>
+  <rect rx="10" width="64" height="64" fill="url(#g)"/>
+  <g transform="translate(72,48)" font-family="Inter, system-ui, Arial" font-size="28" font-weight="700" fill="#fff">
+    <text>KrishvaTech</text>
+  </g>
+</svg>

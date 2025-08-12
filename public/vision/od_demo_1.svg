@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 640">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0b1020"/>
+      <stop offset="100%" stop-color="#060912"/>
+    </linearGradient>
+    <filter id="glow"><feGaussianBlur stdDeviation="2.4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <radialGradient id="v" cx="60%" cy="30%" r="1"><stop offset="0" stop-color="#1b2a44"/><stop offset="1" stop-color="#0a1324"/></radialGradient>
+  </defs>
+  <rect width="100%" height="100%" fill="url(#g)"/>
+  <!-- faux scene: racks & silhouettes -->
+  <g opacity=".8" fill="url(#v)">
+    <rect x="80" y="120" width="1120" height="380" rx="14"/>
+  </g>
+  <g fill="#101a2c" opacity=".9">
+    <rect x="120" y="170" width="240" height="18" rx="9"/><rect x="120" y="210" width="240" height="18" rx="9"/>
+    <rect x="440" y="230" width="220" height="18" rx="9"/><rect x="440" y="270" width="220" height="18" rx="9"/>
+    <rect x="760" y="200" width="360" height="18" rx="9"/><rect x="760" y="240" width="360" height="18" rx="9"/>
+  </g>
+  <!-- silhouettes -->
+  <g fill="#172338" opacity=".9">
+    <circle cx="220" cy="360" r="40"/><rect x="200" y="360" width="40" height="90" rx="8"/>
+    <circle cx="560" cy="350" r="36"/><rect x="542" y="350" width="36" height="84" rx="8"/>
+    <circle cx="930" cy="340" r="38"/><rect x="910" y="340" width="40" height="94" rx="8"/>
+  </g>
+
+  <!-- HUD grid -->
+  <g stroke="#0f1a2a" opacity=".65">
+    <path d="M0 100h1280M0 220h1280M0 340h1280M0 460h1280" />
+    <path d="M160 0v640M320 0v640M480 0v640M640 0v640M800 0v640M960 0v640M1120 0v640" />
+  </g>
+
+  <!-- scanning line -->
+  <rect x="0" y="0" width="1280" height="6" fill="#38bdf8" opacity=".0">
+    <animate attributeName="y" from="-6" to="640" dur="4.2s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0;0.8;0" dur="4.2s" repeatCount="indefinite"/>
+  </rect>
+
+  <!-- detection boxes with labels -->
+  <g font-family="Inter, system-ui, Arial" font-size="18" fill="#dff2ff" filter="url(#glow)">
+    <g>
+      <rect x="170" y="300" width="120" height="120" rx="10" fill="none" stroke="#38bdf8" stroke-width="3"/>
+      <rect x="172" y="278" width="120" height="28" rx="6" fill="#031226" stroke="#38bdf8"/>
+      <text x="232" y="298" text-anchor="middle">Person 97%</text>
+    </g>
+    <g>
+      <rect x="520" y="288" width="120" height="110" rx="10" fill="none" stroke="#a78bfa" stroke-width="3"/>
+      <rect x="522" y="266" width="140" height="28" rx="6" fill="#0b0f1a" stroke="#a78bfa"/>
+      <text x="592" y="285" text-anchor="middle">No-Helmet 88%</text>
+    </g>
+    <g>
+      <rect x="880" y="278" width="130" height="120" rx="10" fill="none" stroke="#34d399" stroke-width="3"/>
+      <rect x="882" y="256" width="128" height="28" rx="6" fill="#071b16" stroke="#34d399"/>
+      <text x="946" y="275" text-anchor="middle">Hardhat 93%</text>
+    </g>
+  </g>
+
+  <!-- tiny footer HUD -->
+  <g font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="13" fill="#7aa7d9" opacity=".85">
+    <text x="30" y="620">CAM 02 • 1080p • Edge: Jetson Orin Nano • FPS: 30</text>
+    <text x="1250" y="620" text-anchor="end">Latency 58ms • Alerts: PPE_violation=1</text>
+  </g>
+</svg>
