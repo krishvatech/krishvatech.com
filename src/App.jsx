@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { motion } from "framer-motion";
+
 import {
   PhoneCall,
   MessageSquare,
@@ -16,8 +16,77 @@ import {
   Radar,
   Sparkles,
 } from "lucide-react";
+import { motion, AnimatePresence, useMotionValue, useTransform } from "framer-motion";
+
 
 // Tailwind is assumed available.
+// ---------- ANIMATION EXTRAS (safe-defined) ----------
+const ParticleCanvas = ({ className = "" }) => {
+  const ref = React.useRef(null);
+  React.useEffect(() => {
+    const canvas = ref.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    let w=canvas.clientWidth, h=canvas.clientHeight, rafId;
+    const DPR = window.devicePixelRatio || 1;
+    const resize = () => {
+      w = canvas.clientWidth; h = canvas.clientHeight;
+      canvas.width = w * DPR; canvas.height = h * DPR; ctx.setTransform(DPR,0,0,DPR,0,0);
+    };
+    resize();
+    const onResize = () => resize();
+    window.addEventListener("resize", onResize);
+    const dots = new Array(80).fill(0).map(() => ({
+      x: Math.random()*w, y: Math.random()*h,
+      vx:(Math.random()-0.5)*0.25, vy:(Math.random()-0.5)*0.25,
+      r:1.1+Math.random()*1.6
+    }));
+    const tick = () => {
+      ctx.clearRect(0,0,w,h);
+      dots.forEach(d => {
+        d.x+=d.vx; d.y+=d.vy;
+        if (d.x<-10) d.x=w+10; if (d.x>w+10) d.x=-10;
+        if (d.y<-10) d.y=h+10; if (d.y>h+10) d.y=-10;
+        ctx.globalAlpha = 0.25;
+        ctx.fillStyle = "rgba(255,255,255,0.7)";
+        ctx.beginPath(); ctx.arc(d.x, d.y, d.r, 0, Math.PI*2); ctx.fill();
+      });
+      rafId = requestAnimationFrame(tick);
+    };
+    tick();
+    return () => { cancelAnimationFrame(rafId); window.removeEventListener("resize", onResize); };
+  }, []);
+  return <canvas ref={ref} className={`pointer-events-none absolute inset-0 h-full w-full ${className}`} />;
+};
+
+const MagneticButton = ({ children, className = "", ...props }) => {
+  const ref = React.useRef(null);
+  const [style, setStyle] = React.useState({ transform: "translate3d(0,0,0)" });
+  const onMove = (e) => {
+    const el = ref.current; if (!el) return;
+    const r = el.getBoundingClientRect();
+    const x = e.clientX - r.left - r.width/2;
+    const y = e.clientY - r.top - r.height/2;
+    setStyle({ transform: `translate3d(${x*0.08}px, ${y*0.08}px, 0)` });
+  };
+  const onLeave = () => setStyle({ transform: "translate3d(0,0,0)" });
+  return <div ref={ref} onMouseMove={onMove} onMouseLeave={onLeave} className="inline-block"><div style={style} className={className} {...props}>{children}</div></div>;
+};
+
+const ParallaxCard = ({ className="", children }) => {
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
+  const rx = useTransform(y, [-60, 60], [8, -8]);
+  const ry = useTransform(x, [-60, 60], [-8, 8]);
+  const onMove = (e) => {
+    const r = e.currentTarget.getBoundingClientRect();
+    x.set(e.clientX - r.left - r.width/2);
+    y.set(e.clientY - r.top - r.height/2);
+  };
+  const onLeave = () => { x.set(0); y.set(0); };
+  return <motion.div style={{ rotateX: rx, rotateY: ry }} onMouseMove={onMove} onMouseLeave={onLeave} className={`[transform-style:preserve-3d] transition will-change-transform ${className}`}>{children}</motion.div>;
+};
+
 
 const Container = ({ className = "", children }) => (
   <div className={`mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 ${className}`}>{children}</div>
@@ -44,7 +113,7 @@ const KButton = ({ as: Tag = "button", href, size = "lg", variant = "primary", c
 };
 
 const KCard = ({ className = "", children }) => (
-  <div className={`rounded-2xl border border-white/10 bg-white/5 backdrop-blur-sm p-5 shadow-sm ${className}`}>{children}</div>
+  <motion.div whileHover={{ y: -4 }} whileTap={{ scale: 0.98 }} viewport={{ once: true }} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} className={`rounded-2xl border border-white/10 bg-white/5 backdrop-blur-sm p-5 shadow-sm transition ${className}`}>{children}</motion.div>
 );
 
 const Badge = ({ children }) => (
@@ -97,7 +166,7 @@ const FloatingOrbs = () => (
 );
 
 const Navbar = () => (
-  <header className="relative z-20 border-b border-white/10 bg-gradient-to-b from-black/50 to-transparent">
+  <motion.header initial={{ y: -20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ duration: 0.6 }} className="relative z-20 border-b border-white/10 bg-gradient-to-b from-black/50 to-transparent">
     <Container className="flex h-16 items-center justify-between">
       <a href="#" className="flex items-center gap-3">
         <img src="/logo.png" alt="KrishvaTech" className="h-8 w-auto" />
@@ -117,12 +186,13 @@ const Navbar = () => (
         </KButton>
       </div>
     </Container>
-  </header>
+  </motion.header>
 );
 
 const Hero = () => (
   <section className="relative overflow-hidden bg-gradient-to-b from-gray-950 via-gray-950 to-[#0b1020] py-20 md:py-28">
     <FloatingOrbs />
+    <ParticleCanvas />
     <Container>
       <div className="mx-auto max-w-3xl text-center">
         <Badge>AI that answers, sees & understands</Badge>
@@ -148,9 +218,9 @@ const Hero = () => (
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.7 }}
-          className="rounded-3xl border border-white/10 bg-white/5 p-4 shadow-2xl backdrop-blur-sm"
+          className="rounded-3xl border border-white/10 bg-white/5 p-4 shadow-2xl backdrop-blur-sm [transform:translateZ(0)]"
         >
-          <div className="grid gap-4 md:grid-cols-2">
+          <ParallaxCard className="grid gap-4 md:grid-cols-2">
             <KCard>
               <div className="flex items-center gap-3">
                 <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/10"><Mic className="h-5 w-5 text-white"/></div>
@@ -170,9 +240,9 @@ const Hero = () => (
                   <p className="text-sm text-white/70">Real‑time detection with on‑edge or cloud.</p>
                 </div>
               </div>
-              <VisionPanel kind="demo" className="mt-5" />
+              <VisionGallery className="mt-5" />
             </KCard>
-          </div>
+          </ParallaxCard>
         </motion.div>
       </div>
     </Container>
@@ -210,26 +280,77 @@ const ChatStrip = ({ left = "AI", right = "User", className = "", variant = "voi
     { from: "ai", text: "Got it. I’ll shortlist 3 picks under ₹6k and share images + sizes." },
   ];
   const chatMsgs = [
-    { from: "user", text: "Looking for a cotton kurta set (Size L), navy blue. Budget ≤ ₹2k." },
-    { from: "ai", text: "Saved. Want trending or budget-friendly? Also, delivery today or pickup?" },
-    { from: "user", text: "Budget-friendly, pickup." },
-    { from: "ai", text: "Cool. Adding 3 options with images, price, and store stock. Want me to reserve one for 6pm?" },
+    { from: "user", text: "Looking to rent a red lehenga (Size M) for 12 Nov. Budget ≤ ₹6k." },
+    { from: "ai", text: "Got it. I have 7 options. Prefer designer picks or budget-friendly?" },
+    { from: "user", text: "Budget-friendly." },
+    { from: "ai", text: "Sharing 3 options with photos, all in M. Rental ₹3.5k–₹5.8k. Want me to hold any for trial?" },
+    { from: "user", text: "Hold style #L-203 for pickup." },
+    { from: "ai", text: "Reserved #L-203 for 12 Nov. Pickup 11 Nov, 6pm (Ring Rd). Deposit ₹1k. Return by 13 Nov. Need alterations?" },
   ];
   const msgs = variant === "chatbot" ? chatMsgs : voiceMsgs;
   return (
-    <div className={`rounded-xl border border-white/10 bg-white/5 p-3 ${className}`}>
+    <motion.div className={`rounded-xl border border-white/10 bg-white/5 p-3 ${className}`} initial="hidden" whileInView="show" viewport={{ once: true }}>
       <div className="mb-2 flex items-center justify-between text-[11px] uppercase tracking-wide text-white/60">
         <span>{left}</span>
         <span>{right}</span>
       </div>
-      <div className="space-y-2">
+      <motion.div className="space-y-2" variants={{ hidden: {}, show: { transition: { staggerChildren: 0.12 }}}}>
         {msgs.map((m, i) => (
-          <ChatBubble key={i} from={m.from === "ai" ? "ai" : "user"} text={m.text} />
+          <motion.div key={i} variants={{ hidden: { opacity: 0, y: 6 }, show: { opacity: 1, y: 0 }}}>
+            <ChatBubble from={m.from === "ai" ? "ai" : "user"} text={m.text} />
+          </motion.div>
+        ))}
+      </motion.div>
+    </motion.div>
+  );
+};
+
+
+const VisionGallery = ({ className = "" }) => {
+  const scenes = [
+    { key: "fire1", label: "Fire", src: "/vision/fire1.png" },
+    { key: "ppe", label: "PPE", src: "/vision/ppe.png" },
+    { key: "fire2", label: "Fire (alt)", src: "/vision/fire2.png" },
+    { key: "fall", label: "Fall", src: "/vision/fall.png" },
+  ];
+  const [i, setI] = React.useState(0);
+  React.useEffect(() => {
+    const id = setInterval(() => setI((p) => (p + 1) % scenes.length), 4000);
+    return () => clearInterval(id);
+  }, []);
+  return (
+    <div className={className}>
+      <div className="relative h-40 overflow-hidden rounded-xl border border-white/10 bg-black">
+        <AnimatePresence mode="wait">
+          <motion.img
+            key={scenes[i].key}
+            src={scenes[i].src}
+            alt={scenes[i].label}
+            className="absolute inset-0 h-full w-full object-cover"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.6 }}
+          />
+        </AnimatePresence>
+      </div>
+      <div className="mt-3 flex flex-wrap gap-2">
+        {scenes.map((s, idx) => (
+          <button
+            key={s.key}
+            onClick={() => setI(idx)}
+            className={`rounded-full border px-3 py-1 text-xs ${
+              idx === i ? "border-white bg-white text-gray-900" : "border-white/20 bg-white/5 text-white/80 hover:border-white/40"
+            }`}
+          >
+            {s.label}
+          </button>
         ))}
       </div>
     </div>
   );
 };
+
 
 const VisionPreview = ({ className = "", src="/vision/real1.png" }) => (
   <div className={`relative h-40 overflow-hidden rounded-xl border border-white/10 bg-black ${className}`}>
@@ -386,7 +507,7 @@ const Demos = () => (
               <p className="text-sm text-white/70">Fire / PPE / Fall detection</p>
             </div>
           </div>
-          <VisionPanel kind="computerVision" className="mt-5" />
+          <VisionPreview className="mt-5" src="/vision/fire1.png" />
           <div className="mt-4 flex justify-end"><KButton href="#contact" size="md" variant="primary">Book a walkthrough</KButton></div>
         </KCard>
       </div>
@@ -457,44 +578,91 @@ const About = () => (
   </section>
 );
 
-const Contact = () => (
-  <section id="contact" className="relative bg-gradient-to-b from-[#090d19] to-black py-20">
-    <Container>
-      <div className="mx-auto max-w-3xl text-center">
-        <h2 className="text-3xl font-semibold text-white sm:text-4xl">Let’s build your AI, fast</h2>
-        <p className="mt-3 text-white/75">Tell us about your use‑case. We’ll reply within a day.</p>
-      </div>
-      <KCard className="mx-auto mt-10 max-w-3xl">
-        <form className="grid gap-4 md:grid-cols-2" onSubmit={(e) => e.preventDefault()}>
-          <div className="md:col-span-1">
-            <label className="mb-1 block text-sm text-white/70">Name</label>
-            <input type="text" placeholder="Your name" className="w-full rounded-xl border border-white/15 bg-white/5 px-4 py-2.5 text-white placeholder:text-white/50 focus:outline-none" />
-          </div>
-          <div className="md:col-span-1">
-            <label className="mb-1 block text-sm text-white/70">Email</label>
-            <input type="email" placeholder="you@company.com" className="w-full rounded-xl border border-white/15 bg-white/5 px-4 py-2.5 text-white placeholder:text-white/50 focus:outline-none" />
-          </div>
-          <div className="md:col-span-1">
-            <label className="mb-1 block text-sm text-white/70">Company</label>
-            <input type="text" placeholder="Company name" className="w-full rounded-xl border border-white/15 bg-white/5 px-4 py-2.5 text-white placeholder:text-white/50 focus:outline-none" />
-          </div>
-          <div className="md:col-span-1">
-            <label className="mb-1 block text-sm text-white/70">Phone / WhatsApp</label>
-            <input type="text" placeholder="+91…" className="w-full rounded-xl border border-white/15 bg-white/5 px-4 py-2.5 text-white placeholder:text-white/50 focus:outline-none" />
-          </div>
-          <div className="md:col-span-2">
-            <label className="mb-1 block text-sm text-white/70">What do you want to build?</label>
-            <textarea placeholder="Voice agent for inbound sales, WhatsApp chatbot for rentals, fall detection for care homes…" rows={5} className="w-full rounded-xl border border-white/15 bg-white/5 px-4 py-2.5 text-white placeholder:text-white/50 focus:outline-none" />
-          </div>
-          <div className="md:col-span-2 flex items-center justify-between">
-            <div className="text-sm text-white/60">We’ll never share your info.</div>
-            <KButton variant="primary">Send message <ArrowRight className="h-4 w-4" /></KButton>
-          </div>
-        </form>
-      </KCard>
-    </Container>
-  </section>
-);
+
+const Contact = () => {
+  const [form, setForm] = React.useState({ name: "", email: "", company: "", phone: "", message: "" });
+  const [status, setStatus] = React.useState({ sending: false, ok: null, msg: "" });
+
+  const onChange = (e) => setForm((s) => ({ ...s, [e.target.name]: e.target.value }));
+
+  const onSubmit = async (e) => {
+    e.preventDefault();
+    setStatus({ sending: true, ok: null, msg: "" });
+    try {
+      const fsId = import.meta.env.VITE_FORMSPREE_ID || "";
+      if (fsId) {
+        const res = await fetch(`https://formspree.io/f/${fsId}`, {
+          method: "POST",
+          headers: { "Accept": "application/json", "Content-Type": "application/json" },
+          body: JSON.stringify(form),
+        });
+        if (!res.ok) throw new Error("Formspree error");
+        setStatus({ sending: false, ok: true, msg: "Thanks! We’ll get back within a day." });
+        setForm({ name: "", email: "", company: "", phone: "", message: "" });
+        return;
+      }
+      // WhatsApp fallback
+      const wa = (import.meta.env.VITE_WHATSAPP_NUMBER || "").replace(/[^0-9]/g, "");
+      const text = `New inquiry (KrishvaTech)\\nName: ${form.name}\\nEmail: ${form.email}\\nCompany: ${form.company}\\nPhone: ${form.phone}\\n\\nMessage:\\n${form.message}`;
+      if (wa) {
+        const url = `https://wa.me/${wa}?text=${encodeURIComponent(text)}`;
+        window.open(url, "_blank");
+        setStatus({ sending: false, ok: true, msg: "Opening WhatsApp… Message pre‑filled." });
+      } else {
+        setStatus({ sending: false, ok: false, msg: "No submission backend configured. Set VITE_FORMSPREE_ID or VITE_WHATSAPP_NUMBER in .env." });
+      }
+    } catch (err) {
+      setStatus({ sending: false, ok: false, msg: "Couldn’t send. Please try again." });
+    }
+  };
+
+  return (
+    <section id="contact" className="relative bg-gradient-to-b from-[#090d19] to-black py-20">
+      <Container>
+        <div className="mx-auto max-w-3xl text-center">
+          <h2 className="text-3xl font-semibold text-white sm:text-4xl">Let’s build your AI, fast</h2>
+          <p className="mt-3 text-white/75">Tell us about your use‑case. We’ll reply within a day.</p>
+        </div>
+        <KCard className="mx-auto mt-10 max-w-3xl">
+          <form className="grid gap-4 md:grid-cols-2" onSubmit={onSubmit} data-netlify="true" name="contact">
+            <input type="hidden" name="form-name" value="contact" />
+            <div className="md:col-span-1">
+              <label className="mb-1 block text-sm text-white/70">Name</label>
+              <input name="name" value={form.name} onChange={onChange} type="text" placeholder="Your name" required className="w-full rounded-xl border border-white/15 bg-white/5 px-4 py-2.5 text-white placeholder:text-white/50 focus:outline-none" />
+            </div>
+            <div className="md:col-span-1">
+              <label className="mb-1 block text-sm text-white/70">Email</label>
+              <input name="email" value={form.email} onChange={onChange} type="email" placeholder="you@company.com" required className="w-full rounded-xl border border-white/15 bg-white/5 px-4 py-2.5 text-white placeholder:text-white/50 focus:outline-none" />
+            </div>
+            <div className="md:col-span-1">
+              <label className="mb-1 block text-sm text-white/70">Company</label>
+              <input name="company" value={form.company} onChange={onChange} type="text" placeholder="Company name" className="w-full rounded-xl border border-white/15 bg-white/5 px-4 py-2.5 text-white placeholder:text-white/50 focus:outline-none" />
+            </div>
+            <div className="md:col-span-1">
+              <label className="mb-1 block text-sm text-white/70">Phone / WhatsApp</label>
+              <input name="phone" value={form.phone} onChange={onChange} type="text" placeholder="+91…" className="w-full rounded-xl border border-white/15 bg-white/5 px-4 py-2.5 text-white placeholder:text-white/50 focus:outline-none" />
+            </div>
+            <div className="md:col-span-2">
+              <label className="mb-1 block text-sm text-white/70">What do you want to build?</label>
+              <textarea name="message" value={form.message} onChange={onChange} placeholder="Voice agent for inbound sales, WhatsApp chatbot for rentals, fall detection for care homes…" rows={5} className="w-full rounded-xl border border-white/15 bg-white/5 px-4 py-2.5 text-white placeholder:text-white/50 focus:outline-none" />
+            </div>
+            <div className="md:col-span-2 flex items-center justify-between">
+              <div className="text-sm text-white/60">We’ll never share your info.</div>
+              <KButton as="button" type="submit" variant="primary" disabled={status.sending} className={status.sending ? "opacity-70" : ""}>
+                {status.sending ? "Sending…" : "Send message"}
+              </KButton>
+            </div>
+            {status.msg && (
+              <div className={`md:col-span-2 rounded-xl border px-4 py-2 text-sm ${status.ok ? "border-emerald-400/40 text-emerald-300/90 bg-emerald-400/5" : "border-rose-400/40 text-rose-300/90 bg-rose-400/5"}`}>
+                {status.msg}
+              </div>
+            )}
+          </form>
+        </KCard>
+      </Container>
+    </section>
+  );
+};
 
 const Footer = () => (
   <footer className="relative border-t border-white/10 bg-black py-10 text-white/70">
