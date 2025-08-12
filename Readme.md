@@ -1,4 +1,4 @@
-# KrishvaTech site (Vite + React + Tailwind)
+# KrishvaTech site (Ultimate, clean build)
 
 ## Run
 ```bash
@@ -14,5 +14,5 @@ npm run build && npm run preview
 ## Contact form
 Create `.env` from `.env.example`:
 - **Formspree**: set `VITE_FORMSPREE_ID`
-- **WhatsApp**: set `VITE_WHATSAPP_NUMBER` (digits only, e.g. 919812345678)
+- **WhatsApp**: set `VITE_WHATSAPP_NUMBER` (digits only)
 Restart dev server after changing env.

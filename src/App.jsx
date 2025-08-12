@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { PhoneCall, Bot, Cpu, MessageSquareText, Camera, Mic } from "lucide-react";
+import { PhoneCall, Bot, Cpu, MessageSquareText, Camera, Layers } from "lucide-react";
 
 const logoSrc = "/logo.png";
 
@@ -22,15 +22,12 @@ const ChatBubble = ({ from = "ai", text = "" }) => (
   </div>
 );
 
-/* ---------- Anim helpers (safe) ---------- */
+/* ---------- Anim helpers ---------- */
 const CursorGlow = () => {
   const ref = useRef(null);
   useEffect(() => {
     const el = ref.current; if (!el) return;
-    const move = (e) => {
-      const x = e.clientX, y = e.clientY;
-      el.style.transform = `translate3d(${x-200}px, ${y-200}px, 0)`;
-    };
+    const move = (e) => { const x = e.clientX, y = e.clientY; el.style.transform = `translate3d(${x-200}px, ${y-200}px, 0)`; };
     window.addEventListener("pointermove", move, { passive: true });
     return () => window.removeEventListener("pointermove", move);
   }, []);
@@ -41,27 +38,21 @@ const CursorGlow = () => {
     />
   );
 };
-
 const ParticleCanvas = () => {
   const ref = useRef(null);
   useEffect(() => {
     const canvas = ref.current; if (!canvas) return;
     const ctx = canvas.getContext("2d");
     let w, h, rafId; const DPR = window.devicePixelRatio || 1;
-    const resize = () => {
-      w = canvas.clientWidth; h = canvas.clientHeight;
-      canvas.width = w*DPR; canvas.height = h*DPR; ctx.setTransform(DPR,0,0,DPR,0,0);
-    };
+    const resize = () => { w = canvas.clientWidth; h = canvas.clientHeight; canvas.width = w*DPR; canvas.height = h*DPR; ctx.setTransform(DPR,0,0,DPR,0,0); };
     resize(); const onResize = () => resize(); window.addEventListener("resize", onResize);
     const dots = new Array(70).fill(0).map(()=>({ x: Math.random()*w, y: Math.random()*h, vx:(Math.random()-0.5)*0.25, vy:(Math.random()-0.5)*0.25, r:1+Math.random()*1.5 }));
     const tick = () => {
       ctx.clearRect(0,0,w,h);
       ctx.fillStyle = "rgba(255,255,255,0.65)";
-      dots.forEach(d=>{
-        d.x+=d.vx; d.y+=d.vy;
+      dots.forEach(d=>{ d.x+=d.vx; d.y+=d.vy;
         if(d.x<-8) d.x=w+8; if(d.x>w+8) d.x=-8; if(d.y<-8) d.y=h+8; if(d.y>h+8) d.y=-8;
-        ctx.globalAlpha = .25;
-        ctx.beginPath(); ctx.arc(d.x, d.y, d.r, 0, Math.PI*2); ctx.fill();
+        ctx.globalAlpha = .25; ctx.beginPath(); ctx.arc(d.x, d.y, d.r, 0, Math.PI*2); ctx.fill();
       });
       rafId = requestAnimationFrame(tick);
     };
@@ -70,9 +61,6 @@ const ParticleCanvas = () => {
   }, []);
   return <canvas ref={ref} className="absolute inset-0 h-full w-full" />;
 };
-
-
-/* Extra FX */
 const NebulaCanvas = () => {
   const ref = useRef(null);
   useEffect(() => {
@@ -83,8 +71,7 @@ const NebulaCanvas = () => {
     resize(); const stars = new Array(120).fill(0).map(()=>({x:Math.random()*w,y:Math.random()*h,z:0.2+Math.random()*0.8}));
     const tick = () => {
       ctx.clearRect(0,0,w,h);
-      stars.forEach(s=>{
-        s.x += (s.z-0.5)*0.6; s.y += (s.z-0.5)*0.6;
+      stars.forEach(s=>{ s.x += (s.z-0.5)*0.6; s.y += (s.z-0.5)*0.6;
         if (s.x<0) s.x=w; if (s.x>w) s.x=0; if (s.y<0) s.y=h; if (s.y>h) s.y=0;
         ctx.globalAlpha = 0.3*s.z; ctx.fillStyle="#ffffff"; ctx.fillRect(s.x,s.y,1.2*s.z,1.2*s.z);
       });
@@ -94,24 +81,7 @@ const NebulaCanvas = () => {
   }, []);
   return <canvas ref={ref} className="absolute inset-0 h-full w-full" />;
 };
-
 const MorphBlob = () => (<div className="blob" aria-hidden />);
-
-const SkillPills = () => {
-  const items = [
-    "AI/ML","GenAI","LLMs","RAG","CV","Voice AI",
-    "Django","FastAPI","Flask","React",
-    "Google STT/TTS","Whisper","Sarvam","FastText","MCP (Model Context Protocol)"
-  ];
-  return (
-    <div className="marquee mt-8">
-      <div className="marquee-track">
-        {items.concat(items).map((t,i)=>(<span key={i} className="pill mx-2">{t}</span>))}
-      </div>
-    </div>
-  );
-};
-
 
 /* ---------- Vision Gallery ---------- */
 const scenes = [
@@ -122,10 +92,7 @@ const scenes = [
 ];
 const VisionGallery = ({ className = "" }) => {
   const [i, setI] = useState(0);
-  useEffect(()=>{
-    const id = setInterval(()=> setI(p => (p+1) % scenes.length), 4000);
-    return () => clearInterval(id);
-  },[]);
+  useEffect(()=>{ const id = setInterval(()=> setI(p => (p+1) % scenes.length), 4000); return () => clearInterval(id); },[]);
   return (
     <div className={className}>
       <div className="relative h-44 overflow-hidden rounded-xl border border-white/10 bg-black hud-grid">
@@ -145,8 +112,7 @@ const VisionGallery = ({ className = "" }) => {
       </div>
       <div className="mt-3 flex flex-wrap gap-2">
         {scenes.map((s, idx) => (
-          <button key={s.key}
-            onClick={()=>setI(idx)}
+          <button key={s.key} onClick={()=>setI(idx)}
             className={`rounded-full border px-3 py-1 text-xs ${idx===i ? "border-white bg-white text-gray-900" : "border-white/20 bg-white/5 text-white/80 hover:border-white/40"}`}>
             {s.label}
           </button>
@@ -181,9 +147,7 @@ const Hero = () => (
     <div className="absolute inset-0 opacity-50"><NebulaCanvas /></div>
     <div className="absolute -top-24 -left-10 md:-top-32 md:left-1/4"><MorphBlob /></div>
     <div className="absolute bottom-[-180px] right-[-120px] md:right-0"><MorphBlob /></div>
-    <div className="absolute inset-0 opacity-60">
-      <ParticleCanvas />
-    </div>
+    <div className="absolute inset-0 opacity-60"><ParticleCanvas /></div>
     <Container className="relative">
       <div className="grid items-center gap-10 md:grid-cols-2">
         <div>
@@ -191,7 +155,7 @@ const Hero = () => (
             <span className="shimmer">AI that answers, sees & understands</span>
           </h1>
           <p className="mt-4 max-w-xl text-white/75">
-            Voice agents, WhatsApp chatbots, real‑time computer vision (fire, PPE, fall),
+            Voice agents, WhatsApp chatbots, real-time computer vision (fire, PPE, fall),
             and ThingsBoard IoT dashboards — shipped fast for your business.
           </p>
           <div className="mt-6 flex gap-3">
@@ -199,7 +163,6 @@ const Hero = () => (
             <a href="#demos" className="btn btn-ghost">See demos</a>
           </div>
         </div>
-        <VoiceAgentDemo />
         <div className="card glow-border p-4">
           <div className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/10"><Camera className="h-5 w-5 text-white"/></div>
@@ -211,7 +174,6 @@ const Hero = () => (
           <VisionGallery className="mt-4" />
         </div>
       </div>
-      <SkillPills />
     </Container>
   </section>
 );
@@ -224,20 +186,110 @@ const Solutions = () => (
       <div className="mt-6 grid gap-4 md:grid-cols-3">
         <div className="card p-5">
           <div className="mb-3 flex items-center gap-2 text-white"><Bot className="h-5 w-5"/><span className="font-medium">AI Voice Agent</span></div>
-          <p className="text-white/75 text-sm">24/7 inbound voice agent: lead capture, FAQs, appointment booking, payment links.</p>
+          <p className="text-white/75 text-sm">24/7 inbound voice agent: lead capture, FAQs, booking, payment links.</p>
         </div>
         <div className="card p-5">
           <div className="mb-3 flex items-center gap-2 text-white"><MessageSquareText className="h-5 w-5"/><span className="font-medium">WhatsApp Chatbot</span></div>
-          <p className="text-white/75 text-sm">Retail rental/buy flow, catalog browsing, stock checks, reservations, reminders.</p>
+          <p className="text-white/75 text-sm">Retail rental/buy flow, catalog browsing, stock checks, reservations.</p>
         </div>
         <div className="card p-5">
           <div className="mb-3 flex items-center gap-2 text-white"><Cpu className="h-5 w-5"/><span className="font-medium">Computer Vision</span></div>
-          <p className="text-white/75 text-sm">On‑edge detection for fire, PPE compliance, and fall — low‑latency alerts.</p>
+          <p className="text-white/75 text-sm">On-edge detection for fire, PPE compliance, and fall — low-latency alerts.</p>
         </div>
       </div>
     </Container>
   </section>
 );
+
+/* ---------- Voice Agent (Textile) ---------- */
+const VoiceAgentDemo = () => {
+  const [stage, setStage] = useState("listening"); // listening | thinking | speaking
+  const [msgs, setMsgs] = useState([]);
+  const [timer, setTimer] = useState(0);
+
+  useEffect(() => {
+    const script = [
+      { from: "user", text: "Hi, do you have cotton poplin 60×60 (58\") in maroon?", stage: "listening", wait: 1100 },
+      { from: "ai", text: "Yes — GSM 120. In stock in maroon & navy. MOQ 50m. Need a sample or place order?", stage: "speaking", wait: 1500 },
+      { from: "user", text: "Price for 200 meters and dispatch time?", stage: "listening", wait: 1200 },
+      { from: "ai", text: "₹145/m ex‑warehouse. Dispatch in 2–3 days. Ship to your address or pickup from mill?", stage: "speaking", wait: 1600 },
+      { from: "user", text: "Ship to Bengaluru. GST: 29ABCDE1234F2Z5.", stage: "listening", wait: 1300 },
+      { from: "ai", text: "Got it. Holding 200m maroon poplin. Proforma invoice sent on WhatsApp with GST. UPI or bank transfer works.", stage: "speaking", wait: 2000 },
+    ];
+
+    setMsgs([]);
+    setStage("listening");
+    setTimer(0);
+
+    const timeouts = [];
+    const intervalId = setInterval(() => setTimer(t => t + 1), 1000);
+    let acc = 600;
+    script.forEach((s) => {
+      const id = setTimeout(() => {
+        setMsgs(m => [...m, { from: s.from, text: s.text }]);
+        setStage(s.stage);
+      }, acc);
+      timeouts.push(id);
+      acc += s.wait;
+    });
+
+    return () => {
+      timeouts.forEach(clearTimeout);
+      clearInterval(intervalId);
+    };
+  }, []);
+
+  const active = stage !== "idle";
+  const entities = [
+    { k: "Fabric", v: "Cotton Poplin 60×60" },
+    { k: "Width", v: '58"' },
+    { k: "Color", v: "Maroon" },
+    { k: "Qty", v: "200 m" },
+    { k: "City", v: "Bengaluru" },
+    { k: "GST", v: "29ABCDE1234F2Z5" },
+    { k: "Price", v: "₹145/m" },
+  ];
+
+  return (
+    <div className="card p-4 glow-border">
+      <div className="flex items-center justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/10">
+            <Layers className="h-5 w-5 text-white" />
+          </div>
+          <div>
+            <h3 className="text-white">Voice AI Agent — Textile</h3>
+            <p className="text-sm text-white/70">Wholesale ordering • Pricing • GST • Dispatch</p>
+          </div>
+        </div>
+        <div className="flex items-center gap-3 text-xs text-white/70">
+          <div className="voice-bars">
+            {Array.from({ length: 20 }).map((_, i) => (
+              <span key={i} style={{ "--i": i, opacity: active ? 1 : 0.35 }} />
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div className="mt-3 flex items-center gap-2 text-xs">
+        <span className={`rounded-full px-2 py-0.5 ${stage==='listening'?'bg-cyan-400/10 text-cyan-200 border border-cyan-400/30': stage==='speaking'?'bg-emerald-400/10 text-emerald-200 border border-emerald-400/30':'bg-white/5 text-white/60'}`}>
+          {stage === 'listening' ? 'Listening' : stage === 'speaking' ? 'Speaking' : 'Thinking'}
+        </span>
+        <span className="text-white/60">AI auto‑plays a sample textile call</span>
+      </div>
+
+      <div className="mt-3 space-y-2">
+        {msgs.map((m, i) => <ChatBubble key={i} from={m.from === 'ai' ? 'ai' : 'user'} text={m.text} />)}
+      </div>
+
+      <div className="mt-4 flex flex-wrap gap-2 text-xs">
+        {entities.map((e, i) => (
+          <span key={i} className="pill">{e.k}: <span className="text-white/90">{e.v}</span></span>
+        ))}
+      </div>
+    </div>
+  );
+};
 
 /* ---------- Demos ---------- */
 const WhatsAppDemo = () => {
@@ -266,90 +318,12 @@ const WhatsAppDemo = () => {
   );
 };
 
-
-const VoiceAgentDemo = () => {
-  const [stage, setStage] = useState("idle"); // idle | listening | thinking | speaking
-  const [msgs, setMsgs] = useState([]);
-  const timers = React.useRef([]);
-
-  const clearTimers = () => { timers.current.forEach(clearTimeout); timers.current = []; };
-
-  const startDemo = () => {
-    clearTimers();
-    setMsgs([]);
-    setStage("listening");
-    timers.current.push(setTimeout(() => {
-      setMsgs(m => [...m, { from: "user", text: "Hi, I want to book a table for 2 tonight." }]);
-      setStage("thinking");
-    }, 1200));
-    timers.current.push(setTimeout(() => {
-      setMsgs(m => [...m, { from: "ai", text: "Sure! What time works for you? 7pm or 8pm? Name for the booking?" }]);
-      setStage("speaking");
-    }, 2400));
-    timers.current.push(setTimeout(() => {
-      setMsgs(m => [...m, { from: "user", text: "7pm, name is Arjun." }]);
-      setStage("thinking");
-    }, 3600));
-    timers.current.push(setTimeout(() => {
-      setMsgs(m => [...m, { from: "ai", text: "Booked for 7pm, 2 guests under Arjun. I’ll send a WhatsApp confirmation." }]);
-      setStage("speaking");
-    }, 4800));
-    timers.current.push(setTimeout(() => {
-      setStage("idle");
-    }, 6200));
-  };
-
-  const stopDemo = () => { clearTimers(); setStage("idle"); };
-
-  React.useEffect(() => () => clearTimers(), []);
-
-  const active = stage !== "idle";
-
-  return (
-    <div className="card p-4">
-      <div className="flex items-center justify-between gap-3">
-        <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/10">
-            <Mic className="h-5 w-5 text-white" />
-          </div>
-          <div>
-            <h3 className="text-white">Voice AI Agent</h3>
-            <p className="text-sm text-white/70">Inbound booking / sales</p>
-          </div>
-        </div>
-        <div className="flex items-end gap-1 opacity-90">
-          <div className="voice-bars">
-            {Array.from({ length: 20 }).map((_, i) => (
-              <span key={i} style={{ ['--i']: i, opacity: active ? 1 : 0.35 }} />
-            ))}
-          </div>
-        </div>
-      </div>
-
-      <div className="mt-3 flex items-center gap-2 text-xs">
-        <span className={`rounded-full px-2 py-0.5 ${stage==='idle'?'bg-white/5 text-white/60':'bg-emerald-400/10 text-emerald-300 border border-emerald-400/30'}`}>Status: {stage}</span>
-        {stage==='thinking' && <span className="text-white/60">transcribing…</span>}
-        {stage==='speaking' && <span className="text-white/60">responding…</span>}
-      </div>
-
-      <div className="mt-3 space-y-2">
-        {msgs.map((m, i) => <ChatBubble key={i} from={m.from === 'ai' ? 'ai' : 'user'} text={m.text} />)}
-      </div>
-
-      <div className="mt-4 flex justify-end gap-2">
-        <button onClick={startDemo} className="btn btn-primary">Start demo</button>
-        <button onClick={stopDemo} className="btn btn-ghost">Stop</button>
-      </div>
-    </div>
-  );
-};
-
 const Demos = () => (
   <section id="demos" className="bg-gradient-to-b from-[#0b1020] to-black py-16">
     <Container>
       <h2 className="text-2xl font-semibold text-white">Product Demos</h2>
       <div className="mt-6 grid gap-4 md:grid-cols-3">
-        <WhatsAppDemo />
+        <VoiceAgentDemo />
         <div className="card p-4">
           <div className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/10"><Camera className="h-5 w-5 text-white"/></div>
@@ -360,12 +334,27 @@ const Demos = () => (
           </div>
           <VisionGallery className="mt-4" />
         </div>
+        <WhatsAppDemo />
       </div>
     </Container>
   </section>
 );
 
 /* ---------- Tech ---------- */
+const SkillPills = () => {
+  const items = [
+    "AI/ML","GenAI","LLMs","RAG","CV","Voice AI",
+    "Django","FastAPI","Flask","React",
+    "Google STT/TTS","Whisper","Sarvam","FastText","MCP (Model Context Protocol)"
+  ];
+  return (
+    <div className="marquee mt-8">
+      <div className="marquee-track">
+        {items.concat(items).map((t,i)=>(<span key={i} className="pill mx-2">{t}</span>))}
+      </div>
+    </div>
+  );
+};
 const Tech = () => (
   <section id="tech" className="bg-[#0a0f1c] py-16 relative overflow-hidden">
     <Container>
@@ -375,6 +364,7 @@ const Tech = () => (
         <div className="card p-5 text-white/80">Django • FastAPI • Flask • React</div>
         <div className="card p-5 text-white/80">Google STT/TTS • Whisper • Sarvam • FastText • MCP (Model Context Protocol)</div>
       </div>
+      <SkillPills />
     </Container>
   </section>
 );
@@ -422,7 +412,7 @@ const Contact = () => {
       if (wa) {
         const url = `https://wa.me/${wa}?text=${encodeURIComponent(text)}`;
         window.open(url, "_blank");
-        setStatus({ sending:false, ok:true, msg:"Opening WhatsApp… Message pre‑filled." });
+        setStatus({ sending:false, ok:true, msg:"Opening WhatsApp… Message pre-filled." });
       } else {
         setStatus({ sending:false, ok:false, msg:"No submission backend configured. Set VITE_FORMSPREE_ID or VITE_WHATSAPP_NUMBER in .env." });
       }
@@ -435,7 +425,7 @@ const Contact = () => {
       <Container>
         <div className="mx-auto max-w-3xl text-center">
           <h2 className="text-2xl font-semibold text-white sm:text-3xl">Let’s build your AI, fast</h2>
-          <p className="mt-2 text-white/75">Tell us about your use‑case. We’ll reply within a day.</p>
+          <p className="mt-2 text-white/75">Tell us about your use-case. We’ll reply within a day.</p>
         </div>
         <div className="card mx-auto mt-8 max-w-3xl p-5">
           <form className="grid gap-4 md:grid-cols-2" onSubmit={onSubmit}>
