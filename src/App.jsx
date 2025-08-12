@@ -1,54 +1,66 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { PhoneCall, Bot, Cpu, MessageSquareText, Camera, Mic } from "lucide-react";
 
-import {
-  PhoneCall,
-  MessageSquare,
-  Camera,
-  UserCheck,
-  Gauge,
-  Brain,
-  ArrowRight,
-  Sun,
-  Moon,
-  PlayCircle,
-  Mic,
-  Bot,
-  Radar,
-  Sparkles,
-} from "lucide-react";
-import { motion, AnimatePresence, useMotionValue, useTransform } from "framer-motion";
+const logoSrc = "/logo.png";
 
+/* ---------- small UI ---------- */
+const Container = ({ children, className = "" }) => (
+  <div className={`container ${className}`}>{children}</div>
+);
+const KButton = ({ as = "a", href = "#", children, className = "", ...rest }) => {
+  const Comp = as;
+  return (
+    <Comp href={href} className={`btn btn-primary ${className}`} {...rest}>
+      {children}
+    </Comp>
+  );
+};
+const ChatBubble = ({ from = "ai", text = "" }) => (
+  <div className={`max-w-[85%] rounded-xl px-3 py-2 text-sm ${from==="ai" ? "bg-white/10 border border-white/15 text-white ml-0" : "bg-emerald-400/10 border border-emerald-400/30 text-emerald-100 ml-auto"}`}>
+    {text}
+  </div>
+);
 
-// Tailwind is assumed available.
-// ---------- ANIMATION EXTRAS (safe-defined) ----------
-const ParticleCanvas = ({ className = "" }) => {
-  const ref = React.useRef(null);
-  React.useEffect(() => {
-    const canvas = ref.current;
-    if (!canvas) return;
+/* ---------- Anim helpers (safe) ---------- */
+const CursorGlow = () => {
+  const ref = useRef(null);
+  useEffect(() => {
+    const el = ref.current; if (!el) return;
+    const move = (e) => {
+      const x = e.clientX, y = e.clientY;
+      el.style.transform = `translate3d(${x-200}px, ${y-200}px, 0)`;
+    };
+    window.addEventListener("pointermove", move, { passive: true });
+    return () => window.removeEventListener("pointermove", move);
+  }, []);
+  return (
+    <div ref={ref}
+      className="pointer-events-none fixed z-[5] h-[400px] w-[400px] rounded-full opacity-20 blur-3xl"
+      style={{ background: "radial-gradient(200px 200px at center, rgba(56,189,248,0.35), rgba(167,139,250,0.25), rgba(52,211,153,0.2), transparent)" }}
+    />
+  );
+};
+
+const ParticleCanvas = () => {
+  const ref = useRef(null);
+  useEffect(() => {
+    const canvas = ref.current; if (!canvas) return;
     const ctx = canvas.getContext("2d");
-    let w=canvas.clientWidth, h=canvas.clientHeight, rafId;
-    const DPR = window.devicePixelRatio || 1;
+    let w, h, rafId; const DPR = window.devicePixelRatio || 1;
     const resize = () => {
       w = canvas.clientWidth; h = canvas.clientHeight;
-      canvas.width = w * DPR; canvas.height = h * DPR; ctx.setTransform(DPR,0,0,DPR,0,0);
+      canvas.width = w*DPR; canvas.height = h*DPR; ctx.setTransform(DPR,0,0,DPR,0,0);
     };
-    resize();
-    const onResize = () => resize();
-    window.addEventListener("resize", onResize);
-    const dots = new Array(80).fill(0).map(() => ({
-      x: Math.random()*w, y: Math.random()*h,
-      vx:(Math.random()-0.5)*0.25, vy:(Math.random()-0.5)*0.25,
-      r:1.1+Math.random()*1.6
-    }));
+    resize(); const onResize = () => resize(); window.addEventListener("resize", onResize);
+    const dots = new Array(70).fill(0).map(()=>({ x: Math.random()*w, y: Math.random()*h, vx:(Math.random()-0.5)*0.25, vy:(Math.random()-0.5)*0.25, r:1+Math.random()*1.5 }));
     const tick = () => {
       ctx.clearRect(0,0,w,h);
-      dots.forEach(d => {
+      ctx.fillStyle = "rgba(255,255,255,0.65)";
+      dots.forEach(d=>{
         d.x+=d.vx; d.y+=d.vy;
-        if (d.x<-10) d.x=w+10; if (d.x>w+10) d.x=-10;
-        if (d.y<-10) d.y=h+10; if (d.y>h+10) d.y=-10;
-        ctx.globalAlpha = 0.25;
-        ctx.fillStyle = "rgba(255,255,255,0.7)";
+        if(d.x<-8) d.x=w+8; if(d.x>w+8) d.x=-8; if(d.y<-8) d.y=h+8; if(d.y>h+8) d.y=-8;
+        ctx.globalAlpha = .25;
         ctx.beginPath(); ctx.arc(d.x, d.y, d.r, 0, Math.PI*2); ctx.fill();
       });
       rafId = requestAnimationFrame(tick);
@@ -56,271 +68,67 @@ const ParticleCanvas = ({ className = "" }) => {
     tick();
     return () => { cancelAnimationFrame(rafId); window.removeEventListener("resize", onResize); };
   }, []);
-  return <canvas ref={ref} className={`pointer-events-none absolute inset-0 h-full w-full ${className}`} />;
-};
-
-const MagneticButton = ({ children, className = "", ...props }) => {
-  const ref = React.useRef(null);
-  const [style, setStyle] = React.useState({ transform: "translate3d(0,0,0)" });
-  const onMove = (e) => {
-    const el = ref.current; if (!el) return;
-    const r = el.getBoundingClientRect();
-    const x = e.clientX - r.left - r.width/2;
-    const y = e.clientY - r.top - r.height/2;
-    setStyle({ transform: `translate3d(${x*0.08}px, ${y*0.08}px, 0)` });
-  };
-  const onLeave = () => setStyle({ transform: "translate3d(0,0,0)" });
-  return <div ref={ref} onMouseMove={onMove} onMouseLeave={onLeave} className="inline-block"><div style={style} className={className} {...props}>{children}</div></div>;
-};
-
-const ParallaxCard = ({ className="", children }) => {
-  const x = useMotionValue(0);
-  const y = useMotionValue(0);
-  const rx = useTransform(y, [-60, 60], [8, -8]);
-  const ry = useTransform(x, [-60, 60], [-8, 8]);
-  const onMove = (e) => {
-    const r = e.currentTarget.getBoundingClientRect();
-    x.set(e.clientX - r.left - r.width/2);
-    y.set(e.clientY - r.top - r.height/2);
-  };
-  const onLeave = () => { x.set(0); y.set(0); };
-  return <motion.div style={{ rotateX: rx, rotateY: ry }} onMouseMove={onMove} onMouseLeave={onLeave} className={`[transform-style:preserve-3d] transition will-change-transform ${className}`}>{children}</motion.div>;
+  return <canvas ref={ref} className="absolute inset-0 h-full w-full" />;
 };
 
 
-const Container = ({ className = "", children }) => (
-  <div className={`mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 ${className}`}>{children}</div>
-);
-
-const KButton = ({ as: Tag = "button", href, size = "lg", variant = "primary", className = "", children, ...props }) => {
-  const sizes = {
-    sm: "px-3 py-1.5 text-sm",
-    md: "px-4 py-2 text-sm",
-    lg: "px-5 py-2.5 text-base",
-  };
-  const variants = {
-    primary: "bg-white text-gray-900 hover:bg-gray-100 shadow-sm border border-white/20",
-    dark: "bg-gray-900 text-white hover:bg-gray-800 border border-white/10",
-    outline: "bg-transparent text-white border border-white/30 hover:border-white",
-  };
-  const cls = `inline-flex items-center gap-2 rounded-2xl transition ${sizes[size]} ${variants[variant]} ${className}`;
-  if (href) return (
-    <a href={href} className={cls} {...props}>{children}</a>
-  );
-  return (
-    <Tag className={cls} {...props}>{children}</Tag>
-  );
-};
-
-const KCard = ({ className = "", children }) => (
-  <motion.div whileHover={{ y: -4 }} whileTap={{ scale: 0.98 }} viewport={{ once: true }} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} className={`rounded-2xl border border-white/10 bg-white/5 backdrop-blur-sm p-5 shadow-sm transition ${className}`}>{children}</motion.div>
-);
-
-const Badge = ({ children }) => (
-  <span className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs uppercase tracking-wide text-white/90">
-    <Sparkles className="h-3 w-3" /> {children}
-  </span>
-);
-
-const ThemeToggle = () => {
-  const [dark, setDark] = useState(true);
+/* Extra FX */
+const NebulaCanvas = () => {
+  const ref = useRef(null);
   useEffect(() => {
-    const root = document.documentElement;
-    if (dark) root.classList.add("dark"); else root.classList.remove("dark");
-  }, [dark]);
-  return (
-    <button
-      onClick={() => setDark(d => !d)}
-      className="group inline-flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-white/80 hover:bg-white/10"
-      aria-label="Toggle theme"
-    >
-      {dark ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
-    </button>
-  );
+    const c = ref.current; if (!c) return;
+    const ctx = c.getContext("2d");
+    let w, h, id; const DPR = window.devicePixelRatio || 1;
+    const resize = () => { w = c.clientWidth; h = c.clientHeight; c.width = w*DPR; c.height = h*DPR; ctx.setTransform(DPR,0,0,DPR,0,0); };
+    resize(); const stars = new Array(120).fill(0).map(()=>({x:Math.random()*w,y:Math.random()*h,z:0.2+Math.random()*0.8}));
+    const tick = () => {
+      ctx.clearRect(0,0,w,h);
+      stars.forEach(s=>{
+        s.x += (s.z-0.5)*0.6; s.y += (s.z-0.5)*0.6;
+        if (s.x<0) s.x=w; if (s.x>w) s.x=0; if (s.y<0) s.y=h; if (s.y>h) s.y=0;
+        ctx.globalAlpha = 0.3*s.z; ctx.fillStyle="#ffffff"; ctx.fillRect(s.x,s.y,1.2*s.z,1.2*s.z);
+      });
+      id = requestAnimationFrame(tick);
+    };
+    tick(); return () => cancelAnimationFrame(id);
+  }, []);
+  return <canvas ref={ref} className="absolute inset-0 h-full w-full" />;
 };
 
-const FloatingOrbs = () => (
-  <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
-    <motion.div
-      initial={{ opacity: 0.2, y: 40 }}
-      animate={{ opacity: 0.6, y: -40 }}
-      transition={{ repeat: Infinity, repeatType: "reverse", duration: 12 }}
-      className="absolute -top-24 -left-24 h-80 w-80 rounded-full blur-3xl"
-      style={{ background: "radial-gradient(closest-side, rgba(56,189,248,0.35), transparent)" }}
-    />
-    <motion.div
-      initial={{ opacity: 0.15, x: -20 }}
-      animate={{ opacity: 0.5, x: 20 }}
-      transition={{ repeat: Infinity, repeatType: "reverse", duration: 10 }}
-      className="absolute top-1/3 -right-24 h-96 w-96 rounded-full blur-3xl"
-      style={{ background: "radial-gradient(closest-side, rgba(167,139,250,0.35), transparent)" }}
-    />
-    <motion.div
-      initial={{ opacity: 0.2, y: 30 }}
-      animate={{ opacity: 0.6, y: -30 }}
-      transition={{ repeat: Infinity, repeatType: "reverse", duration: 14 }}
-      className="absolute bottom-0 left-1/4 h-72 w-72 rounded-full blur-3xl"
-      style={{ background: "radial-gradient(closest-side, rgba(52,211,153,0.3), transparent)" }}
-    />
-  </div>
-);
+const MorphBlob = () => (<div className="blob" aria-hidden />);
 
-const Navbar = () => (
-  <motion.header initial={{ y: -20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ duration: 0.6 }} className="relative z-20 border-b border-white/10 bg-gradient-to-b from-black/50 to-transparent">
-    <Container className="flex h-16 items-center justify-between">
-      <a href="#" className="flex items-center gap-3">
-        <img src="/logo.png" alt="KrishvaTech" className="h-8 w-auto" />
-        <span className="text-lg font-semibold tracking-tight text-white">KrishvaTech</span>
-      </a>
-      <nav className="hidden items-center gap-8 text-sm text-white/80 md:flex">
-        <a href="#solutions" className="hover:text-white">Solutions</a>
-        <a href="#demos" className="hover:text-white">Demos</a>
-        <a href="#tech" className="hover:text-white">Tech</a>
-        <a href="#about" className="hover:text-white">About</a>
-        <a href="#contact" className="hover:text-white">Contact</a>
-      </nav>
-      <div className="flex items-center gap-3">
-        <ThemeToggle />
-        <KButton href="#contact" size="md" variant="primary" className="hidden md:inline-flex">
-          Book a demo <ArrowRight className="h-4 w-4" />
-        </KButton>
-      </div>
-    </Container>
-  </motion.header>
-);
-
-const Hero = () => (
-  <section className="relative overflow-hidden bg-gradient-to-b from-gray-950 via-gray-950 to-[#0b1020] py-20 md:py-28">
-    <FloatingOrbs />
-    <ParticleCanvas />
-    <Container>
-      <div className="mx-auto max-w-3xl text-center">
-        <Badge>AI that answers, sees & understands</Badge>
-        <h1 className="mt-6 text-4xl font-semibold leading-tight text-white sm:text-5xl md:text-6xl">
-          Supercharge your business with real‑time AI —
-          <span className="bg-gradient-to-r from-cyan-300 via-fuchsia-300 to-emerald-300 bg-clip-text text-transparent"> voice, chat, vision</span>, and more.
-        </h1>
-        <p className="mt-5 text-lg text-white/80">
-          We build production‑ready AI: Voice Agents, Chatbots, Computer Vision (real‑time object detection), Interview Copilots, ThingsBoard IoT dashboards, and Sentiment Analysis.
-        </p>
-        <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-          <KButton href="#contact" variant="primary">
-            Start a project <ArrowRight className="h-4 w-4" />
-          </KButton>
-          <KButton href="#demos" variant="outline">
-            See live demos <PlayCircle className="h-4 w-4" />
-          </KButton>
-        </div>
-      </div>
-      <div className="relative mx-auto mt-14 max-w-6xl">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.7 }}
-          className="rounded-3xl border border-white/10 bg-white/5 p-4 shadow-2xl backdrop-blur-sm [transform:translateZ(0)]"
-        >
-          <ParallaxCard className="grid gap-4 md:grid-cols-2">
-            <KCard>
-              <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/10"><Mic className="h-5 w-5 text-white"/></div>
-                <div>
-                  <h3 className="text-white">AI Voice Agent</h3>
-                  <p className="text-sm text-white/70">Natural, multilingual, latency‑tuned.</p>
-                </div>
-              </div>
-              <VoiceWave className="mt-5" />
-              <ChatStrip className="mt-4" left="AI" right="User"/>
-            </KCard>
-            <KCard>
-              <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/10"><Camera className="h-5 w-5 text-white"/></div>
-                <div>
-                  <h3 className="text-white">Computer Vision</h3>
-                  <p className="text-sm text-white/70">Real‑time detection with on‑edge or cloud.</p>
-                </div>
-              </div>
-              <VisionGallery className="mt-5" />
-            </KCard>
-          </ParallaxCard>
-        </motion.div>
-      </div>
-    </Container>
-  </section>
-);
-
-const VoiceWave = ({ className = "" }) => {
-  const bars = new Array(36).fill(0);
+const SkillPills = () => {
+  const items = [
+    "AI/ML","GenAI","LLMs","RAG","CV","Voice AI",
+    "Django","FastAPI","Flask","React",
+    "Google STT/TTS","Whisper","Sarvam","FastText","MCP (Model Context Protocol)"
+  ];
   return (
-    <div className={`flex h-16 items-end gap-[6px] overflow-hidden rounded-xl bg-black/40 p-3 ${className}`}>
-      {bars.map((_, i) => (
-        <motion.span
-          key={i}
-          initial={{ height: 8 }}
-          animate={{ height: [8, 36, 12, 28, 10, 22, 8] }}
-          transition={{ repeat: Infinity, duration: 1.6, delay: i * 0.02 }}
-          className="w-[5px] rounded-full bg-white/70"
-        />
-      ))}
+    <div className="marquee mt-8">
+      <div className="marquee-track">
+        {items.concat(items).map((t,i)=>(<span key={i} className="pill mx-2">{t}</span>))}
+      </div>
     </div>
   );
 };
 
-const ChatBubble = ({ from = "ai", text }) => (
-  <div className={`max-w-[85%] rounded-2xl px-4 py-2 text-sm ${from === "ai" ? "bg-white/10 text-white" : "bg-white text-gray-900 ml-auto"}`}>
-    {text}
-  </div>
-);
 
-const ChatStrip = ({ left = "AI", right = "User", className = "", variant = "voice" }) => {
-  const voiceMsgs = [
-    { from: "user", text: "Hi! Do you have a red lehenga for rental on 12 Nov?" },
-    { from: "ai", text: "12 Nov is booked. Next free: 13 or 14 Nov. Want me to hold one?" },
-    { from: "user", text: "13 works. Budget under ₹6k." },
-    { from: "ai", text: "Got it. I’ll shortlist 3 picks under ₹6k and share images + sizes." },
-  ];
-  const chatMsgs = [
-    { from: "user", text: "Looking to rent a red lehenga (Size M) for 12 Nov. Budget ≤ ₹6k." },
-    { from: "ai", text: "Got it. I have 7 options. Prefer designer picks or budget-friendly?" },
-    { from: "user", text: "Budget-friendly." },
-    { from: "ai", text: "Sharing 3 options with photos, all in M. Rental ₹3.5k–₹5.8k. Want me to hold any for trial?" },
-    { from: "user", text: "Hold style #L-203 for pickup." },
-    { from: "ai", text: "Reserved #L-203 for 12 Nov. Pickup 11 Nov, 6pm (Ring Rd). Deposit ₹1k. Return by 13 Nov. Need alterations?" },
-  ];
-  const msgs = variant === "chatbot" ? chatMsgs : voiceMsgs;
-  return (
-    <motion.div className={`rounded-xl border border-white/10 bg-white/5 p-3 ${className}`} initial="hidden" whileInView="show" viewport={{ once: true }}>
-      <div className="mb-2 flex items-center justify-between text-[11px] uppercase tracking-wide text-white/60">
-        <span>{left}</span>
-        <span>{right}</span>
-      </div>
-      <motion.div className="space-y-2" variants={{ hidden: {}, show: { transition: { staggerChildren: 0.12 }}}}>
-        {msgs.map((m, i) => (
-          <motion.div key={i} variants={{ hidden: { opacity: 0, y: 6 }, show: { opacity: 1, y: 0 }}}>
-            <ChatBubble from={m.from === "ai" ? "ai" : "user"} text={m.text} />
-          </motion.div>
-        ))}
-      </motion.div>
-    </motion.div>
-  );
-};
-
-
+/* ---------- Vision Gallery ---------- */
+const scenes = [
+  { key: "fire1", label: "Fire", src: "/vision/fire1.png" },
+  { key: "ppe", label: "PPE", src: "/vision/ppe.png" },
+  { key: "fire2", label: "Fire (alt)", src: "/vision/fire2.png" },
+  { key: "fall", label: "Fall", src: "/vision/fall.png" },
+];
 const VisionGallery = ({ className = "" }) => {
-  const scenes = [
-    { key: "fire1", label: "Fire", src: "/vision/fire1.png" },
-    { key: "ppe", label: "PPE", src: "/vision/ppe.png" },
-    { key: "fire2", label: "Fire (alt)", src: "/vision/fire2.png" },
-    { key: "fall", label: "Fall", src: "/vision/fall.png" },
-  ];
-  const [i, setI] = React.useState(0);
-  React.useEffect(() => {
-    const id = setInterval(() => setI((p) => (p + 1) % scenes.length), 4000);
+  const [i, setI] = useState(0);
+  useEffect(()=>{
+    const id = setInterval(()=> setI(p => (p+1) % scenes.length), 4000);
     return () => clearInterval(id);
-  }, []);
+  },[]);
   return (
     <div className={className}>
-      <div className="relative h-40 overflow-hidden rounded-xl border border-white/10 bg-black">
+      <div className="relative h-44 overflow-hidden rounded-xl border border-white/10 bg-black hud-grid">
         <AnimatePresence mode="wait">
           <motion.img
             key={scenes[i].key}
@@ -330,19 +138,16 @@ const VisionGallery = ({ className = "" }) => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.6 }}
+            transition={{ duration: 0.5 }}
           />
         </AnimatePresence>
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-1 bg-cyan-400/0 scanline" />
       </div>
       <div className="mt-3 flex flex-wrap gap-2">
         {scenes.map((s, idx) => (
-          <button
-            key={s.key}
-            onClick={() => setI(idx)}
-            className={`rounded-full border px-3 py-1 text-xs ${
-              idx === i ? "border-white bg-white text-gray-900" : "border-white/20 bg-white/5 text-white/80 hover:border-white/40"
-            }`}
-          >
+          <button key={s.key}
+            onClick={()=>setI(idx)}
+            className={`rounded-full border px-3 py-1 text-xs ${idx===i ? "border-white bg-white text-gray-900" : "border-white/20 bg-white/5 text-white/80 hover:border-white/40"}`}>
             {s.label}
           </button>
         ))}
@@ -351,240 +156,251 @@ const VisionGallery = ({ className = "" }) => {
   );
 };
 
-
-const VisionPreview = ({ className = "", src="/vision/real1.png" }) => (
-  <div className={`relative h-40 overflow-hidden rounded-xl border border-white/10 bg-black ${className}`}>
-    <img src={src} alt="Computer vision demo frame" className="h-full w-full object-cover opacity-95"/>
-  </div>
+/* ---------- Navbar ---------- */
+const Navbar = () => (
+  <header className="sticky top-0 z-20 border-b border-white/10 bg-black/60 backdrop-blur supports-[backdrop-filter]:bg-black/40">
+    <Container className="flex h-14 items-center justify-between">
+      <a href="#" className="flex items-center gap-2 text-white">
+        <img src={logoSrc} alt="KrishvaTech" className="h-8 w-8 rounded" />
+        <span className="text-sm font-medium">KrishvaTech</span>
+      </a>
+      <nav className="hidden gap-6 text-sm text-white/80 sm:flex">
+        <a href="#solutions" className="hover:text-white">Solutions</a>
+        <a href="#demos" className="hover:text-white">Demos</a>
+        <a href="#tech" className="hover:text-white">Tech</a>
+        <a href="#contact" className="hover:text-white">Contact</a>
+      </nav>
+      <KButton href="#contact" className="hidden sm:inline-flex"><PhoneCall className="h-4 w-4" /> Talk to us</KButton>
+    </Container>
+  </header>
 );
 
-const VisionPanel = ({ kind = "computerVision", className = "" }) => {
-  const [data, setData] = React.useState(null);
-  React.useEffect(() => {
-    fetch("/vision/vision_boxes.json")
-      .then((r) => r.json())
-      .then(setData)
-      .catch(() => setData(null));
-  }, []);
-  if (!data || !data[kind]) {
-    return <VisionPreview className={className} />;
-  }
-  const { image, boxes } = data[kind];
-  return (
-    <div className={`relative h-40 overflow-hidden rounded-xl border border-white/10 bg-black ${className}`}>
-      <img src={image} alt="Vision frame" className="h-full w-full object-cover" />
-      <div className="absolute inset-0">
-        {boxes.map((b, i) => (
-          <div
-            key={i}
-            className="absolute rounded-xl border-2 border-fuchsia-400/80"
-            style={{ left: `${b.x*100}%`, top: `${b.y*100}%`, width: `${b.w*100}%`, height: `${b.h*100}%` }}
-          >
-            <div className="absolute -top-6 left-0 rounded-md border border-fuchsia-400/60 bg-black/70 px-2 py-0.5 text-xs text-white">
-              {b.label}
+/* ---------- Hero ---------- */
+const Hero = () => (
+  <section className="relative overflow-hidden bg-gradient-to-b from-gray-950 via-gray-950 to-[#0b1020] py-20 md:py-28">
+    <div className="absolute inset-0 opacity-50"><NebulaCanvas /></div>
+    <div className="absolute -top-24 -left-10 md:-top-32 md:left-1/4"><MorphBlob /></div>
+    <div className="absolute bottom-[-180px] right-[-120px] md:right-0"><MorphBlob /></div>
+    <div className="absolute inset-0 opacity-60">
+      <ParticleCanvas />
+    </div>
+    <Container className="relative">
+      <div className="grid items-center gap-10 md:grid-cols-2">
+        <div>
+          <h1 className="text-4xl font-semibold leading-tight text-white sm:text-5xl md:text-6xl">
+            <span className="shimmer">AI that answers, sees & understands</span>
+          </h1>
+          <p className="mt-4 max-w-xl text-white/75">
+            Voice agents, WhatsApp chatbots, real‑time computer vision (fire, PPE, fall),
+            and ThingsBoard IoT dashboards — shipped fast for your business.
+          </p>
+          <div className="mt-6 flex gap-3">
+            <KButton href="#contact">Start a project</KButton>
+            <a href="#demos" className="btn btn-ghost">See demos</a>
+          </div>
+        </div>
+        <VoiceAgentDemo />
+        <div className="card glow-border p-4">
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/10"><Camera className="h-5 w-5 text-white"/></div>
+            <div>
+              <h3 className="text-white">Computer Vision</h3>
+              <p className="text-sm text-white/70">Fire / PPE / Fall detection</p>
             </div>
           </div>
-        ))}
+          <VisionGallery className="mt-4" />
+        </div>
       </div>
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-1 bg-cyan-400/0 animate-[scan_4s_linear_infinite]"></div>
-      <style>{`@keyframes scan { 0% { transform: translateY(-4px); opacity: 0;} 50% {opacity: 0.8;} 100% { transform: translateY(160px); opacity: 0;} }`}</style>
+      <SkillPills />
+    </Container>
+  </section>
+);
+
+/* ---------- Solutions ---------- */
+const Solutions = () => (
+  <section id="solutions" className="bg-[#0a0f1c] py-16">
+    <Container>
+      <h2 className="text-2xl font-semibold text-white">Solutions</h2>
+      <div className="mt-6 grid gap-4 md:grid-cols-3">
+        <div className="card p-5">
+          <div className="mb-3 flex items-center gap-2 text-white"><Bot className="h-5 w-5"/><span className="font-medium">AI Voice Agent</span></div>
+          <p className="text-white/75 text-sm">24/7 inbound voice agent: lead capture, FAQs, appointment booking, payment links.</p>
+        </div>
+        <div className="card p-5">
+          <div className="mb-3 flex items-center gap-2 text-white"><MessageSquareText className="h-5 w-5"/><span className="font-medium">WhatsApp Chatbot</span></div>
+          <p className="text-white/75 text-sm">Retail rental/buy flow, catalog browsing, stock checks, reservations, reminders.</p>
+        </div>
+        <div className="card p-5">
+          <div className="mb-3 flex items-center gap-2 text-white"><Cpu className="h-5 w-5"/><span className="font-medium">Computer Vision</span></div>
+          <p className="text-white/75 text-sm">On‑edge detection for fire, PPE compliance, and fall — low‑latency alerts.</p>
+        </div>
+      </div>
+    </Container>
+  </section>
+);
+
+/* ---------- Demos ---------- */
+const WhatsAppDemo = () => {
+  const chat = [
+    { from: "user", text: "Looking to rent a red lehenga (Size M) for 12 Nov. Budget ≤ ₹6k." },
+    { from: "ai", text: "Got it. I have 7 options. Prefer designer picks or budget-friendly?" },
+    { from: "user", text: "Budget-friendly." },
+    { from: "ai", text: "Sharing 3 options with photos, all in M (₹3.5k–₹5.8k). Want me to hold one for trial?" },
+    { from: "user", text: "Hold style #L-203 for pickup." },
+    { from: "ai", text: "Reserved #L-203 for 12 Nov. Pickup 11 Nov, 6pm (Ring Rd). Deposit ₹1k. Need alterations?" },
+  ];
+  return (
+    <div className="card p-4">
+      <div className="flex items-center gap-3">
+        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/10"><Bot className="h-5 w-5 text-white"/></div>
+        <div>
+          <h3 className="text-white">WhatsApp Chat Demo</h3>
+          <p className="text-sm text-white/70">Retail rental / buy flow</p>
+        </div>
+      </div>
+      <div className="mt-3 space-y-2">
+        {chat.map((m,i)=><ChatBubble key={i} from={m.from==="ai"?"ai":"user"} text={m.text} />)}
+      </div>
+      <div className="mt-4 flex justify-end"><KButton href="#contact">Request live link</KButton></div>
     </div>
   );
 };
 
 
-const DetectBox = ({ x, y, w, h, label }) => (
-  <motion.div
-    initial={{ opacity: 0, scale: 0.98 }}
-    whileInView={{ opacity: 1, scale: 1 }}
-    viewport={{ once: true }}
-    transition={{ duration: 0.6 }}
-    className="absolute rounded-xl border-2 p-1 text-[11px] font-medium text-white/90 border-fuchsia-400"
-    style={{
-      left: x,
-      top: y,
-      width: w,
-      height: h,
-      boxShadow: "0 0 0 9999px inset rgba(0,0,0,0.15)",
-    }}
-  >
-    <span className="rounded-md bg-black/60 px-2 py-0.5">{label}</span>
-  </motion.div>
-);
+const VoiceAgentDemo = () => {
+  const [stage, setStage] = useState("idle"); // idle | listening | thinking | speaking
+  const [msgs, setMsgs] = useState([]);
+  const timers = React.useRef([]);
 
-const SolutionCard = ({ icon: Icon, title, subtitle, points }) => (
-  <KCard className="group h-full">
-    <div className="flex items-start gap-3">
-      <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white/10">
-        <Icon className="h-5 w-5 text-white" />
+  const clearTimers = () => { timers.current.forEach(clearTimeout); timers.current = []; };
+
+  const startDemo = () => {
+    clearTimers();
+    setMsgs([]);
+    setStage("listening");
+    timers.current.push(setTimeout(() => {
+      setMsgs(m => [...m, { from: "user", text: "Hi, I want to book a table for 2 tonight." }]);
+      setStage("thinking");
+    }, 1200));
+    timers.current.push(setTimeout(() => {
+      setMsgs(m => [...m, { from: "ai", text: "Sure! What time works for you? 7pm or 8pm? Name for the booking?" }]);
+      setStage("speaking");
+    }, 2400));
+    timers.current.push(setTimeout(() => {
+      setMsgs(m => [...m, { from: "user", text: "7pm, name is Arjun." }]);
+      setStage("thinking");
+    }, 3600));
+    timers.current.push(setTimeout(() => {
+      setMsgs(m => [...m, { from: "ai", text: "Booked for 7pm, 2 guests under Arjun. I’ll send a WhatsApp confirmation." }]);
+      setStage("speaking");
+    }, 4800));
+    timers.current.push(setTimeout(() => {
+      setStage("idle");
+    }, 6200));
+  };
+
+  const stopDemo = () => { clearTimers(); setStage("idle"); };
+
+  React.useEffect(() => () => clearTimers(), []);
+
+  const active = stage !== "idle";
+
+  return (
+    <div className="card p-4">
+      <div className="flex items-center justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/10">
+            <Mic className="h-5 w-5 text-white" />
+          </div>
+          <div>
+            <h3 className="text-white">Voice AI Agent</h3>
+            <p className="text-sm text-white/70">Inbound booking / sales</p>
+          </div>
+        </div>
+        <div className="flex items-end gap-1 opacity-90">
+          <div className="voice-bars">
+            {Array.from({ length: 20 }).map((_, i) => (
+              <span key={i} style={{ ['--i']: i, opacity: active ? 1 : 0.35 }} />
+            ))}
+          </div>
+        </div>
       </div>
-      <div>
-        <h3 className="text-white">{title}</h3>
-        <p className="text-sm text-white/70">{subtitle}</p>
+
+      <div className="mt-3 flex items-center gap-2 text-xs">
+        <span className={`rounded-full px-2 py-0.5 ${stage==='idle'?'bg-white/5 text-white/60':'bg-emerald-400/10 text-emerald-300 border border-emerald-400/30'}`}>Status: {stage}</span>
+        {stage==='thinking' && <span className="text-white/60">transcribing…</span>}
+        {stage==='speaking' && <span className="text-white/60">responding…</span>}
+      </div>
+
+      <div className="mt-3 space-y-2">
+        {msgs.map((m, i) => <ChatBubble key={i} from={m.from === 'ai' ? 'ai' : 'user'} text={m.text} />)}
+      </div>
+
+      <div className="mt-4 flex justify-end gap-2">
+        <button onClick={startDemo} className="btn btn-primary">Start demo</button>
+        <button onClick={stopDemo} className="btn btn-ghost">Stop</button>
       </div>
     </div>
-    <ul className="mt-4 space-y-2 text-sm text-white/80">
-      {points.map((p, i) => (
-        <li key={i} className="flex items-start gap-2"><span className="mt-1 h-1.5 w-1.5 rounded-full bg-white/60"></span>{p}</li>
-      ))}
-    </ul>
-  </KCard>
-);
-
-const Solutions = () => (
-  <section id="solutions" className="relative bg-[#0b1020] py-20">
-    <Container>
-      <div className="mx-auto max-w-2xl text-center">
-        <h2 className="text-3xl font-semibold text-white sm:text-4xl">What we build</h2>
-        <p className="mt-3 text-white/75">End‑to‑end AI systems, tailored to your workflows.</p>
-      </div>
-      <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-        <SolutionCard
-          icon={PhoneCall}
-          title="AI Voice Agent"
-          subtitle="Call center automation that feels human"
-          points={["Real‑time STT/TTS (Hindi, Gujarati, English)", "Exotel/Meta/Telephony ready", "Latency‑tuned barge‑in and silence handling"]}
-        />
-        <SolutionCard
-          icon={MessageSquare}
-          title="AI Chatbot"
-          subtitle="WhatsApp, Web, Instagram"
-          points={["Retrieval‑augmented answers", "Multi‑tenant for franchises", "Order/booking flows"]}
-        />
-        <SolutionCard
-          icon={Camera}
-          title="Computer Vision"
-          subtitle="Real‑time object & event detection"
-          points={["Fire, fall, person, PPE, intrusion", "Edge (Jetson) or Cloud", "Alerting via WhatsApp/voice"]}
-        />
-        <SolutionCard
-          icon={UserCheck}
-          title="Interview Copilot"
-          subtitle="Structured, bias‑aware interview assistant"
-          points={["Live transcribe & summarize", "Skill/rubric scoring", "ATS export"]}
-        />
-        <SolutionCard
-          icon={Gauge}
-          title="ThingsBoard IoT"
-          subtitle="Industrial dashboards & alerts"
-          points={["Custom widgets & rules", "Device telemetry & commands", "Role‑based access"]}
-        />
-        <SolutionCard
-          icon={Brain}
-          title="Sentiment Analysis"
-          subtitle="Understand customer intent & mood"
-          points={["Multi‑lingual classification", "Ticket triage & routing", "NPS/CSAT insights"]}
-        />
-      </div>
-    </Container>
-  </section>
-);
+  );
+};
 
 const Demos = () => (
-  <section id="demos" className="relative bg-gradient-to-b from-[#0b1020] to-[#0a0f1c] py-20">
+  <section id="demos" className="bg-gradient-to-b from-[#0b1020] to-black py-16">
     <Container>
-      <div className="mx-auto max-w-2xl text-center">
-        <h2 className="text-3xl font-semibold text-white sm:text-4xl">See it in action</h2>
-        <p className="mt-3 text-white/75">Interactive mockups of our voice and vision systems.</p>
-      </div>
-      <div className="mt-10 grid gap-6 md:grid-cols-2">
-        <KCard>
+      <h2 className="text-2xl font-semibold text-white">Product Demos</h2>
+      <div className="mt-6 grid gap-4 md:grid-cols-3">
+        <WhatsAppDemo />
+        <div className="card p-4">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/10"><Bot className="h-5 w-5 text-white"/></div>
-            <div>
-              <h3 className="text-white">WhatsApp Chat Demo</h3>
-              <p className="text-sm text-white/70">Retail rental / buy flow</p>
-            </div>
-          </div>
-          <ChatStrip className="mt-5" />
-          <div className="mt-4 flex justify-end"><KButton href="#contact" size="md" variant="primary">Request live link</KButton></div>
-        </KCard>
-        <KCard>
-          <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/10"><Radar className="h-5 w-5 text-white"/></div>
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/10"><Camera className="h-5 w-5 text-white"/></div>
             <div>
               <h3 className="text-white">Vision Detection Demo</h3>
-              <p className="text-sm text-white/70">Fire / PPE / Fall detection</p>
+              <p className="text-sm text-white/70">Flip between Fire, PPE, Fall</p>
             </div>
           </div>
-          <VisionPreview className="mt-5" src="/vision/fire1.png" />
-          <div className="mt-4 flex justify-end"><KButton href="#contact" size="md" variant="primary">Book a walkthrough</KButton></div>
-        </KCard>
-      </div>
-    </Container>
-  </section>
-);
-
-const TechPill = ({ label }) => (
-  <span className="rounded-full border border-white/15 bg-white/5 px-3 py-1 text-sm text-white/80">{label}</span>
-);
-
-const Tech = () => (
-  <section id="tech" className="relative bg-[#0a0f1c] py-20">
-    <Container>
-      <div className="mx-auto max-w-2xl text-center">
-        <h2 className="text-3xl font-semibold text-white sm:text-4xl">Engineered for production</h2>
-        <p className="mt-3 text-white/75">Modern, scalable stack — tuned for speed, cost, and reliability.</p>
-      </div>
-      <div className="mt-8 flex flex-wrap justify-center gap-3">
-        {[
-          "Python",
-          "FastAPI",
-          "Django",
-          "PostgreSQL",
-          "Redis",
-          "YOLOv8",
-          "OpenCV",
-          "Whisper / Google STT/TTS",
-          "Pinecone",
-          "LangChain",
-          "React",
-          "Tailwind",
-          "ThingsBoard",
-          "Docker",
-          "Kubernetes",
-        ].map((t) => (
-          <TechPill key={t} label={t} />
-        ))}
-      </div>
-      <KCard className="mx-auto mt-8 max-w-4xl">
-        <div className="grid items-center gap-6 md:grid-cols-2">
-          <div>
-            <h3 className="text-white">Low‑latency voice pipeline</h3>
-            <p className="mt-2 text-sm text-white/75">Streaming STT → intent → tools → TTS, with barge‑in, silence VAD, and retry logic. Designed for real‑world telephony.</p>
-            <ul className="mt-4 space-y-2 text-sm text-white/80">
-              <li>• Token‑aware prompts & memory</li>
-              <li>• Multi‑lingual fallback routing</li>
-              <li>• Observability & cost controls</li>
-            </ul>
-          </div>
-          <VoiceWave className="md:ml-auto" />
+          <VisionGallery className="mt-4" />
         </div>
-      </KCard>
-    </Container>
-  </section>
-);
-
-const About = () => (
-  <section id="about" className="relative bg-[#090d19] py-20">
-    <Container>
-      <div className="mx-auto max-w-3xl text-center">
-        <h2 className="text-3xl font-semibold text-white sm:text-4xl">Built by practitioners</h2>
-        <p className="mt-4 text-white/80">
-          We’re an engineering‑first team shipping voice, chat, and computer‑vision systems for real businesses. From retail & textiles to smart facilities, we deliver end‑to‑end solutions that actually run in production.
-        </p>
       </div>
     </Container>
   </section>
 );
 
+/* ---------- Tech ---------- */
+const Tech = () => (
+  <section id="tech" className="bg-[#0a0f1c] py-16 relative overflow-hidden">
+    <Container>
+      <h2 className="text-2xl font-semibold text-white">Skills & Stack</h2>
+      <div className="mt-6 grid gap-4 md:grid-cols-3">
+        <div className="card p-5 text-white/80">AI/ML • GenAI • LLMs • RAG • CV • Voice AI</div>
+        <div className="card p-5 text-white/80">Django • FastAPI • Flask • React</div>
+        <div className="card p-5 text-white/80">Google STT/TTS • Whisper • Sarvam • FastText • MCP (Model Context Protocol)</div>
+      </div>
+    </Container>
+  </section>
+);
 
+/* ---------- About ---------- */
+const About = () => (
+  <section className="bg-gradient-to-b from-black to-[#070b15] py-16">
+    <Container>
+      <div className="grid gap-8 md:grid-cols-3">
+        <div className="md:col-span-2">
+          <h2 className="text-2xl font-semibold text-white">We ship AI that works</h2>
+          <p className="mt-3 text-white/75">We build voice agents, chatbots, and computer vision systems tailored to your process — not the other way around.</p>
+        </div>
+        <div className="flex items-start justify-end">
+          <img src={logoSrc} alt="logo" className="h-16 w-16 rounded" />
+        </div>
+      </div>
+    </Container>
+  </section>
+);
+
+/* ---------- Contact ---------- */
 const Contact = () => {
-  const [form, setForm] = React.useState({ name: "", email: "", company: "", phone: "", message: "" });
-  const [status, setStatus] = React.useState({ sending: false, ok: null, msg: "" });
-
-  const onChange = (e) => setForm((s) => ({ ...s, [e.target.name]: e.target.value }));
-
+  const [form, setForm] = useState({ name:"", email:"", company:"", phone:"", message:"" });
+  const [status, setStatus] = useState({ sending:false, ok:null, msg:"" });
+  const onChange = (e) => setForm(s => ({...s, [e.target.name]: e.target.value}));
   const onSubmit = async (e) => {
     e.preventDefault();
     setStatus({ sending: true, ok: null, msg: "" });
@@ -597,60 +413,53 @@ const Contact = () => {
           body: JSON.stringify(form),
         });
         if (!res.ok) throw new Error("Formspree error");
-        setStatus({ sending: false, ok: true, msg: "Thanks! We’ll get back within a day." });
-        setForm({ name: "", email: "", company: "", phone: "", message: "" });
+        setStatus({ sending:false, ok:true, msg:"Thanks! We’ll get back within a day." });
+        setForm({ name:"", email:"", company:"", phone:"", message:"" });
         return;
       }
-      // WhatsApp fallback
       const wa = (import.meta.env.VITE_WHATSAPP_NUMBER || "").replace(/[^0-9]/g, "");
-      const text = `New inquiry (KrishvaTech)\\nName: ${form.name}\\nEmail: ${form.email}\\nCompany: ${form.company}\\nPhone: ${form.phone}\\n\\nMessage:\\n${form.message}`;
+      const text = `New inquiry (KrishvaTech)\nName: ${form.name}\nEmail: ${form.email}\nCompany: ${form.company}\nPhone: ${form.phone}\n\nMessage:\n${form.message}`;
       if (wa) {
         const url = `https://wa.me/${wa}?text=${encodeURIComponent(text)}`;
         window.open(url, "_blank");
-        setStatus({ sending: false, ok: true, msg: "Opening WhatsApp… Message pre‑filled." });
+        setStatus({ sending:false, ok:true, msg:"Opening WhatsApp… Message pre‑filled." });
       } else {
-        setStatus({ sending: false, ok: false, msg: "No submission backend configured. Set VITE_FORMSPREE_ID or VITE_WHATSAPP_NUMBER in .env." });
+        setStatus({ sending:false, ok:false, msg:"No submission backend configured. Set VITE_FORMSPREE_ID or VITE_WHATSAPP_NUMBER in .env." });
       }
     } catch (err) {
-      setStatus({ sending: false, ok: false, msg: "Couldn’t send. Please try again." });
+      setStatus({ sending:false, ok:false, msg:"Couldn’t send. Please try again." });
     }
   };
-
   return (
-    <section id="contact" className="relative bg-gradient-to-b from-[#090d19] to-black py-20">
+    <section id="contact" className="relative bg-gradient-to-b from-[#090d19] to-black py-16">
       <Container>
         <div className="mx-auto max-w-3xl text-center">
-          <h2 className="text-3xl font-semibold text-white sm:text-4xl">Let’s build your AI, fast</h2>
-          <p className="mt-3 text-white/75">Tell us about your use‑case. We’ll reply within a day.</p>
+          <h2 className="text-2xl font-semibold text-white sm:text-3xl">Let’s build your AI, fast</h2>
+          <p className="mt-2 text-white/75">Tell us about your use‑case. We’ll reply within a day.</p>
         </div>
-        <KCard className="mx-auto mt-10 max-w-3xl">
-          <form className="grid gap-4 md:grid-cols-2" onSubmit={onSubmit} data-netlify="true" name="contact">
-            <input type="hidden" name="form-name" value="contact" />
-            <div className="md:col-span-1">
-              <label className="mb-1 block text-sm text-white/70">Name</label>
-              <input name="name" value={form.name} onChange={onChange} type="text" placeholder="Your name" required className="w-full rounded-xl border border-white/15 bg-white/5 px-4 py-2.5 text-white placeholder:text-white/50 focus:outline-none" />
+        <div className="card mx-auto mt-8 max-w-3xl p-5">
+          <form className="grid gap-4 md:grid-cols-2" onSubmit={onSubmit}>
+            <div><label className="mb-1 block text-sm text-white/70">Name</label>
+              <input name="name" required value={form.name} onChange={onChange} className="w-full rounded-xl border border-white/15 bg-white/5 px-4 py-2.5 text-white placeholder:text-white/50 focus:outline-none" placeholder="Your name" />
             </div>
-            <div className="md:col-span-1">
-              <label className="mb-1 block text-sm text-white/70">Email</label>
-              <input name="email" value={form.email} onChange={onChange} type="email" placeholder="you@company.com" required className="w-full rounded-xl border border-white/15 bg-white/5 px-4 py-2.5 text-white placeholder:text-white/50 focus:outline-none" />
+            <div><label className="mb-1 block text-sm text-white/70">Email</label>
+              <input name="email" type="email" required value={form.email} onChange={onChange} className="w-full rounded-xl border border-white/15 bg-white/5 px-4 py-2.5 text-white placeholder:text-white/50 focus:outline-none" placeholder="you@company.com" />
             </div>
-            <div className="md:col-span-1">
-              <label className="mb-1 block text-sm text-white/70">Company</label>
-              <input name="company" value={form.company} onChange={onChange} type="text" placeholder="Company name" className="w-full rounded-xl border border-white/15 bg-white/5 px-4 py-2.5 text-white placeholder:text-white/50 focus:outline-none" />
+            <div><label className="mb-1 block text-sm text-white/70">Company</label>
+              <input name="company" value={form.company} onChange={onChange} className="w-full rounded-xl border border-white/15 bg-white/5 px-4 py-2.5 text-white placeholder:text-white/50 focus:outline-none" placeholder="Company name" />
             </div>
-            <div className="md:col-span-1">
-              <label className="mb-1 block text-sm text-white/70">Phone / WhatsApp</label>
-              <input name="phone" value={form.phone} onChange={onChange} type="text" placeholder="+91…" className="w-full rounded-xl border border-white/15 bg-white/5 px-4 py-2.5 text-white placeholder:text-white/50 focus:outline-none" />
+            <div><label className="mb-1 block text-sm text-white/70">Phone / WhatsApp</label>
+              <input name="phone" value={form.phone} onChange={onChange} className="w-full rounded-xl border border-white/15 bg-white/5 px-4 py-2.5 text-white placeholder:text-white/50 focus:outline-none" placeholder="+91…" />
             </div>
             <div className="md:col-span-2">
               <label className="mb-1 block text-sm text-white/70">What do you want to build?</label>
-              <textarea name="message" value={form.message} onChange={onChange} placeholder="Voice agent for inbound sales, WhatsApp chatbot for rentals, fall detection for care homes…" rows={5} className="w-full rounded-xl border border-white/15 bg-white/5 px-4 py-2.5 text-white placeholder:text-white/50 focus:outline-none" />
+              <textarea name="message" rows={5} value={form.message} onChange={onChange} className="w-full rounded-xl border border-white/15 bg-white/5 px-4 py-2.5 text-white placeholder:text-white/50 focus:outline-none" placeholder="Voice agent, WhatsApp bot, fire/PPE/fall detection…" />
             </div>
             <div className="md:col-span-2 flex items-center justify-between">
               <div className="text-sm text-white/60">We’ll never share your info.</div>
-              <KButton as="button" type="submit" variant="primary" disabled={status.sending} className={status.sending ? "opacity-70" : ""}>
+              <button type="submit" className={`btn btn-primary ${status.sending ? "opacity-70" : ""}`} disabled={status.sending}>
                 {status.sending ? "Sending…" : "Send message"}
-              </KButton>
+              </button>
             </div>
             {status.msg && (
               <div className={`md:col-span-2 rounded-xl border px-4 py-2 text-sm ${status.ok ? "border-emerald-400/40 text-emerald-300/90 bg-emerald-400/5" : "border-rose-400/40 text-rose-300/90 bg-rose-400/5"}`}>
@@ -658,56 +467,39 @@ const Contact = () => {
               </div>
             )}
           </form>
-        </KCard>
+        </div>
       </Container>
     </section>
   );
 };
 
+/* ---------- Footer ---------- */
 const Footer = () => (
-  <footer className="relative border-t border-white/10 bg-black py-10 text-white/70">
-    <Container className="grid items-start gap-8 md:grid-cols-4">
-      <div className="md:col-span-2">
-        <div className="flex items-center gap-3">
-          <img src="/logo.png" alt="KrishvaTech" className="h-7 w-auto" />
-          <span className="text-white">KrishvaTech Pvt Ltd</span>
-        </div>
-        <p className="mt-3 max-w-md text-sm">AI Voice Agents, Chatbots, Computer Vision, Interview Copilot, ThingsBoard IoT, and Sentiment Analysis. Built in India, delivered worldwide.</p>
+  <footer className="border-t border-white/10 bg-black/60 py-8 text-white/70">
+    <Container className="flex flex-col items-center gap-3 sm:flex-row sm:justify-between">
+      <div className="flex items-center gap-2">
+        <img src={logoSrc} alt="KrishvaTech" className="h-6 w-6 rounded" />
+        <span className="text-sm">© {new Date().getFullYear()} KrishvaTech</span>
       </div>
-      <div>
-        <div className="text-white">Links</div>
-        <ul className="mt-3 space-y-2 text-sm">
-          <li><a className="hover:text-white" href="#solutions">Solutions</a></li>
-          <li><a className="hover:text-white" href="#demos">Demos</a></li>
-          <li><a className="hover:text-white" href="#tech">Tech</a></li>
-          <li><a className="hover:text-white" href="#contact">Contact</a></li>
-        </ul>
-      </div>
-      <div>
-        <div className="text-white">Contact</div>
-        <ul className="mt-3 space-y-2 text-sm">
-          <li>hello@krishvatech.com</li>
-          <li>Surat • Gujarat • India</li>
-        </ul>
-      </div>
-    </Container>
-    <Container className="mt-8 border-t border-white/10 pt-6 text-xs text-white/50">
-      © {new Date().getFullYear()} KrishvaTech Pvt Ltd. All rights reserved.
+      <div className="text-sm">AI voice • Chatbot • Vision • IoT</div>
     </Container>
   </footer>
 );
 
-export default function KrishvaTechSite() {
+export default function App() {
   return (
-    <main className="min-h-screen bg-black text-white [--tw-cyan:rgb(56,189,248)] [--tw-fuchsia:rgb(217,70,239)] [--tw-emerald:rgb(52,211,153)]">
-      <Navbar />
-      <Hero />
-      <Solutions />
-      <Demos />
-      <Tech />
-      <About />
-      <Contact />
-      <Footer />
-    </main>
+    <>
+      <CursorGlow />
+      <main className="min-h-screen bg-black text-white">
+        <Navbar />
+        <Hero />
+        <Solutions />
+        <Demos />
+        <Tech />
+        <About />
+        <Contact />
+        <Footer />
+      </main>
+    </>
   );
 }
