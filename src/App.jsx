@@ -441,7 +441,6 @@ const Footer = () => (
 
       {/* Right Section: Email Contact */}
       <div className="text-sm text-center sm:text-right">
-        For business inquiries: <br />
         <a
           href="mailto:info@krishvatech.co"
           className="text-white hover:text-white/90 underline"
