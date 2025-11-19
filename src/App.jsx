@@ -420,25 +420,36 @@ const Contact = () => {
       setStatus({ sending:false, ok:false, msg:"Couldn’t send. Please try again." });
     }
   };
-  return (
-    <section id="contact" className="relative bg-gradient-to-b from-[#090d19] to-black py-16">
-      <Container>
-        <h1>Let's build your AI, fast</h1>
-        <p>Email us at <a href="mailto:info@krishvatech.co">info@krishvatech.com</a></p>
-      </Container>
-    </section>
-  );
 };
 
 /* ---------- Footer ---------- */
+/* ---------- Footer ---------- */
 const Footer = () => (
-  <footer className="border-t border-white/10 bg-black/60 py-8 text-white/70">
-    <Container className="flex flex-col items-center gap-3 sm:flex-row sm:justify-between">
+  <footer className="border-t border-white/10 bg-black/60 py-10 text-white/70">
+    <Container className="flex flex-col gap-6 sm:flex-row sm:justify-between sm:items-center">
+
+      {/* Left Section: Logo + Copyright */}
       <div className="flex items-center gap-2">
         <img src={logoSrc} alt="KrishvaTech" className="h-6 w-6 rounded" />
         <span className="text-sm">© {new Date().getFullYear()} KrishvaTech</span>
       </div>
-      <div className="text-sm">AI voice • Chatbot • Vision • IoT</div>
+
+      {/* Middle Section: Service Tags */}
+      <div className="text-sm text-center sm:text-right">
+        AI voice • Chatbot • Vision • IoT
+      </div>
+
+      {/* Right Section: Email Contact */}
+      <div className="text-sm text-center sm:text-right">
+        For business inquiries: <br />
+        <a
+          href="mailto:info@krishvatech.co"
+          className="text-white hover:text-white/90 underline"
+        >
+          info@krishvatech.co
+        </a>
+      </div>
+
     </Container>
   </footer>
 );
