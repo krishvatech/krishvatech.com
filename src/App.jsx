@@ -423,41 +423,8 @@ const Contact = () => {
   return (
     <section id="contact" className="relative bg-gradient-to-b from-[#090d19] to-black py-16">
       <Container>
-        <div className="mx-auto max-w-3xl text-center">
-          <h2 className="text-2xl font-semibold text-white sm:text-3xl">Let’s build your AI, fast</h2>
-          <p className="mt-2 text-white/75">Tell us about your use-case. We’ll reply within a day.</p>
-        </div>
-        <div className="card mx-auto mt-8 max-w-3xl p-5">
-          <form className="grid gap-4 md:grid-cols-2" onSubmit={onSubmit}>
-            <div><label className="mb-1 block text-sm text-white/70">Name</label>
-              <input name="name" required value={form.name} onChange={onChange} className="w-full rounded-xl border border-white/15 bg-white/5 px-4 py-2.5 text-white placeholder:text-white/50 focus:outline-none" placeholder="Your name" />
-            </div>
-            <div><label className="mb-1 block text-sm text-white/70">Email</label>
-              <input name="email" type="email" required value={form.email} onChange={onChange} className="w-full rounded-xl border border-white/15 bg-white/5 px-4 py-2.5 text-white placeholder:text-white/50 focus:outline-none" placeholder="you@company.com" />
-            </div>
-            <div><label className="mb-1 block text-sm text-white/70">Company</label>
-              <input name="company" value={form.company} onChange={onChange} className="w-full rounded-xl border border-white/15 bg-white/5 px-4 py-2.5 text-white placeholder:text-white/50 focus:outline-none" placeholder="Company name" />
-            </div>
-            <div><label className="mb-1 block text-sm text-white/70">Phone / WhatsApp</label>
-              <input name="phone" value={form.phone} onChange={onChange} className="w-full rounded-xl border border-white/15 bg-white/5 px-4 py-2.5 text-white placeholder:text-white/50 focus:outline-none" placeholder="+91…" />
-            </div>
-            <div className="md:col-span-2">
-              <label className="mb-1 block text-sm text-white/70">What do you want to build?</label>
-              <textarea name="message" rows={5} value={form.message} onChange={onChange} className="w-full rounded-xl border border-white/15 bg-white/5 px-4 py-2.5 text-white placeholder:text-white/50 focus:outline-none" placeholder="Voice agent, WhatsApp bot, fire/PPE/fall detection…" />
-            </div>
-            <div className="md:col-span-2 flex items-center justify-between">
-              <div className="text-sm text-white/60">We’ll never share your info.</div>
-              <button type="submit" className={`btn btn-primary ${status.sending ? "opacity-70" : ""}`} disabled={status.sending}>
-                {status.sending ? "Sending…" : "Send message"}
-              </button>
-            </div>
-            {status.msg && (
-              <div className={`md:col-span-2 rounded-xl border px-4 py-2 text-sm ${status.ok ? "border-emerald-400/40 text-emerald-300/90 bg-emerald-400/5" : "border-rose-400/40 text-rose-300/90 bg-rose-400/5"}`}>
-                {status.msg}
-              </div>
-            )}
-          </form>
-        </div>
+        <h1>Let's build your AI, fast</h1>
+        <p>Email us at <a href="mailto:info@krishvatech.co">info@krishvatech.com</a></p>
       </Container>
     </section>
   );
