@@ -445,7 +445,7 @@ const Footer = () => (
           href="mailto:info@krishvatech.co"
           className="text-white hover:text-white/90 underline"
         >
-          info@krishvatech.co
+          info@krishvatech.com
         </a>
       </div>
 
