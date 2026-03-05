@@ -1,23 +1,3 @@
-<<<<<<< HEAD
-# KrishvaTech site (Ultimate, clean build)
-
-## Run
-```bash
-npm install
-npm run dev
-```
-
-## Build
-```bash
-npm run build && npm run preview
-```
-
-## Contact form
-Create `.env` from `.env.example`:
-- **Formspree**: set `VITE_FORMSPREE_ID`
-- **WhatsApp**: set `VITE_WHATSAPP_NUMBER` (digits only)
-Restart dev server after changing env.
-=======
 # KrishvaTech Landing (Vite + React + Tailwind)
 
 This is a ready-to-run landing page for **KrishvaTech** with animated sections, demo widgets, and a contact form UI.
@@ -61,4 +41,3 @@ This build uses real images placed at:
 - `public/vision/real1.png` (Computer Vision card)
 - `public/vision/real2.png` (Vision Detection Demo card)
 You can replace these files with your own CCTV frames anytime (keep the same filenames), or add more and change the `src` props in `src/App.jsx`.
->>>>>>> b0b189c0 (Update website)
