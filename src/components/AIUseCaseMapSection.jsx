@@ -14,7 +14,7 @@ import {
   ShieldAlert,
   Workflow,
 } from "lucide-react";
-import { aiUseCaseMap, deploymentReferences, useCaseMapPipeline } from "../content/platformData";
+import { aiUseCaseMap, targetDeploymentProfiles, useCaseMapPipeline } from "../content/platformData";
 import { Container, fadeInUp, revealTransition, SectionTitle } from "./layout";
 
 const industryIcons = [Factory, Gem, Cloud];
@@ -59,7 +59,7 @@ export function AIUseCaseMapSection({
                 <img src={industry.image} alt={industry.title} className="industry-image" />
                 <div className="industry-overlay" />
                 <div className="industry-usecase-content">
-                  <div className="icon-box">
+                  <div className="icon-box industry-card-icon">
                     <IndustryIcon size={18} />
                   </div>
                   <h3 className="industry-usecase-title">{industry.title}</h3>
@@ -143,9 +143,12 @@ export function AIUseCaseMapSection({
           variants={fadeInUp}
           transition={revealTransition}
         >
-          <p className="panel-title">Deployment Reference</p>
+          <p className="panel-title">Target Deployment Profiles</p>
+          <p className="edge-datacenter-note mt-3">
+            Planning references for beta and pilot scoping. These are not customer deployments.
+          </p>
           <div className="mt-4 grid gap-4 md:grid-cols-3">
-            {deploymentReferences.map((item, index) => (
+            {targetDeploymentProfiles.map((item, index) => (
               <motion.article
                 key={item.industry}
                 className="panel"
@@ -157,9 +160,9 @@ export function AIUseCaseMapSection({
               >
                 <h3 className="text-base text-white">{item.industry}</h3>
                 <div className="mt-3 grid gap-2">
-                  <div className="tech-row">Site Type: {item.siteType}</div>
-                  <div className="tech-row">Camera Count: {item.cameraCount}</div>
-                  <div className="tech-row">Event Classes: {item.eventClasses.join(" · ")}</div>
+                  <div className="tech-row">Target Environment: {item.targetEnvironment}</div>
+                  <div className="tech-row">Typical Target Range: {item.typicalTargetRange}</div>
+                  <div className="tech-row">Planned Detections: {item.plannedDetections.join(" · ")}</div>
                 </div>
               </motion.article>
             ))}

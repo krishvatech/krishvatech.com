@@ -1,4 +1,5 @@
 import React from "react";
+import GPUGridCanvas from "./visuals/GPUGridCanvas";
 
 const nodes = [
   { left: "8%", top: "14%", delay: "0s" },
@@ -13,6 +14,7 @@ const nodes = [
 
 export const AnimatedGpuBackground = ({ className = "" }) => (
   <div className={`gpu-bg ${className}`} aria-hidden>
+    <GPUGridCanvas />
     <div className="gpu-grid-layer" />
     <div className="gpu-grid-layer depth" />
     <div className="gpu-ambient gpu-ambient-green" />

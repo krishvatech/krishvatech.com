@@ -2,7 +2,13 @@ export const inceptionStatement =
   "KrishvaTech is preparing its application to the NVIDIA Inception program to further scale its GPU-powered industrial AI platform.";
 
 export const infrastructurePositioningSentence =
-  "KrishvaTech is building GPU-accelerated edge AI infrastructure that converts industrial video streams into real-time operational intelligence.";
+  "KrishvaTech is building GPU-accelerated edge AI infrastructure that powers industrial multi-stream inference pipelines and converts runtime signals into real-time operational intelligence.";
+
+export const homeHeroBullets = [
+  "Multi-stream inference pipeline designed for industrial camera environments.",
+  "Edge Event Engine designed to convert video signals into operational events.",
+  "Operations Dashboard planned for incident review, alert workflows, and fleet visibility.",
+];
 
 const textileIndustryImage =
   "https://images.unsplash.com/photo-1758270804188-8ca0b6d254bc?auto=format&fit=crop&w=2000&q=80";
@@ -244,29 +250,76 @@ export const gpuAccelerationStory = [
 export const gpuAccelerationSummary =
   "EdgeVision assigns compute-intensive decode, preprocessing, and inference stages to GPUs so industrial teams can operate real-time video intelligence infrastructure at deployment scale.";
 
-export const platformProofMetrics = [
-  {
-    jetsonProfile: "Jetson Orin Nano 8GB",
-    streamsPerNode: "8-12 streams per node",
-    p95Latency: "110-160 ms p95",
-    eventThroughput: "1.2K-2.1K events/hour/node",
+export const platformSectionCopy = {
+  architectureBuilt: {
+    headline: "Designed for Edge-First Industrial Environments",
+    lines: [
+      "EdgeVision is designed to run close to cameras, where latency and uptime matter.",
+      "The platform architecture separates inference, event processing, and control-plane functions.",
+      "This structure is intended to support staged rollout from pilot zones to larger camera footprints.",
+    ],
+    bullets: [
+      "RTSP ingestion layer for camera onboarding and stream control.",
+      "Jetson-based edge nodes for local GPU inference.",
+      "Edge-to-dashboard event flow for operations teams.",
+    ],
   },
-  {
-    jetsonProfile: "Jetson Orin NX 16GB",
-    streamsPerNode: "16-24 streams per node",
-    p95Latency: "85-130 ms p95",
-    eventThroughput: "2.6K-4.2K events/hour/node",
+  whyGpuRequired: {
+    headline: "Why GPU Acceleration Is Required",
+    lines: [
+      "CPU-only pipelines are typically constrained when multiple high-resolution streams must be processed in parallel.",
+      "EdgeVision is designed to use GPU-accelerated decode, preprocessing, and inference paths.",
+      "TensorRT optimization is planned to reduce inference latency variance under multi-stream load.",
+    ],
+    bullets: [
+      "Parallel stream processing with DeepStream pipeline orchestration.",
+      "Model runtime optimization with TensorRT on Jetson hardware.",
+      "Lower edge-to-alert delay target through on-device inference.",
+    ],
   },
-  {
-    jetsonProfile: "Jetson AGX Orin 32GB",
-    streamsPerNode: "24-40 streams per node",
-    p95Latency: "70-115 ms p95",
-    eventThroughput: "4.8K-7.5K events/hour/node",
+  deploymentFirst: {
+    headline: "Deployment-First Architecture",
+    lines: [
+      "The platform is being built for real operational constraints: unstable streams, intermittent networks, and long-running edge services.",
+      "Design focus is on predictable behavior, controlled rollout, and maintainable operations.",
+      "Configuration and telemetry are intended to support site-by-site expansion.",
+    ],
+    bullets: [
+      "Policy-driven onboarding for new cameras and zones.",
+      "Event schema normalization for downstream operational systems.",
+      "Planned controls for update, rollback, and node health visibility.",
+    ],
   },
-];
+  realTimePipeline: {
+    headline: "Real-Time EdgeVision Pipeline",
+    lines: [
+      "Camera Streams -> RTSP Ingestion -> Jetson Edge AI Node -> DeepStream Multi-Stream Pipeline -> TensorRT Optimized Inference -> Edge Event Engine -> Operations Dashboard.",
+      "Each stage has a defined role to keep compute-heavy tasks on GPU and control tasks on CPU.",
+      "This pipeline is designed for low-latency event generation in industrial monitoring workflows.",
+    ],
+    bullets: [
+      "GPU path: decode, preprocessing, inference.",
+      "CPU path: event rules, routing, and control-plane logic.",
+      "Dashboard path: event timelines, alert states, and operational context.",
+    ],
+  },
+};
 
-export const proofMetricsNote =
-  "Reference benchmark ranges from controlled staging and pilot deployments. Final throughput depends on model complexity, resolution, and event density.";
+export const productStatusContent = {
+  statusLabel: "Private Beta",
+  availableNow: [
+    "Core architecture definition and platform UI flows.",
+    "RTSP ingestion and multi-stream pipeline integration in beta scope.",
+    "Jetson + DeepStream + TensorRT runtime integration in active development.",
+  ],
+  comingNext: [
+    "Expanded event rule packs for target industries.",
+    "Operations dashboard workflows and role-based access controls.",
+    "Reliability hardening for long-duration edge runtime behavior.",
+  ],
+  access:
+    "Contact Us to request pilot or beta access. Share target environment details (camera count, site type, and detection priorities) to scope onboarding.",
+};
 
 export const gpuVsCpuExecutionTable = [
   {
@@ -288,7 +341,7 @@ export const gpuVsCpuExecutionTable = [
     gpuWorkload: "TensorRT FP16/INT8 optimized inference kernels.",
     cpuWorkload: "Model lifecycle management and fallback orchestration.",
     reason:
-      "GPU inference provides lower p95 latency and better throughput per watt at the edge.",
+      "GPU inference is designed for lower latency variation and better throughput per watt at the edge.",
   },
   {
     stage: "Event generation and routing",
@@ -306,24 +359,35 @@ export const gpuVsCpuExecutionTable = [
   },
 ];
 
-export const deploymentReferences = [
+export const reliabilityDesignGoalsContent = {
+  intro: "These are active design goals for the beta platform, not production claims.",
+  goals: [
+    "Stream resiliency: reconnect handling, health checks, and degraded-mode stream behavior.",
+    "Operational telemetry: node status, stream state, pipeline counters, and event flow monitoring.",
+    "Watchdog controls: process supervision and recovery triggers for stuck or failed services.",
+    "Restart policies: controlled automatic restart and staged recovery for edge runtime components.",
+    "Auditability: event trail design for operator review and incident reconstruction.",
+  ],
+};
+
+export const targetDeploymentProfiles = [
   {
     industry: "Textile Manufacturing",
-    siteType: "High-throughput spinning and weaving facilities",
-    cameraCount: "28-64 cameras/site",
-    eventClasses: ["Machine downtime", "Worker safety zone breach", "Process anomaly"],
+    targetEnvironment: "Spinning, weaving, and packaging floors",
+    typicalTargetRange: "28-64 cameras per site",
+    plannedDetections: ["Machine downtime signals", "Worker safety zone breach", "Process anomaly patterns"],
   },
   {
     industry: "Diamond Processing",
-    siteType: "Polishing and grading production floors",
-    cameraCount: "16-40 cameras/site",
-    eventClasses: ["Restricted zone entry", "Asset handling anomaly", "Workflow occupancy drift"],
+    targetEnvironment: "Polishing and grading work zones",
+    typicalTargetRange: "16-40 cameras per site",
+    plannedDetections: ["Restricted zone entry", "Asset handling anomaly", "Workflow occupancy drift"],
   },
   {
     industry: "Smart Infrastructure",
-    siteType: "Traffic corridors and critical public operations zones",
-    cameraCount: "40-120 cameras/site",
-    eventClasses: ["Public safety anomaly", "Traffic congestion spike", "Perimeter security breach"],
+    targetEnvironment: "Traffic corridors and public operations zones",
+    typicalTargetRange: "40-120 cameras per site",
+    plannedDetections: ["Public safety anomalies", "Traffic congestion spikes", "Perimeter security events"],
   },
 ];
 
