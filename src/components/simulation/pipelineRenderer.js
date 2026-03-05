@@ -2,8 +2,8 @@ export const PIPELINE_STAGES = [
   "Camera Streams",
   "RTSP Ingestion",
   "Jetson Edge AI Node",
-  "DeepStream Multi-Stream Pipeline",
-  "TensorRT Optimized Inference",
+  "DeepStream Pipeline",
+  "TensorRT Inference",
   "Edge Event Engine",
   "Operations Dashboard",
 ];

@@ -129,8 +129,8 @@ export const useCaseMapPipeline = [
   "Camera Streams",
   "RTSP Ingestion",
   "Jetson Edge AI Node",
-  "DeepStream Multi-Stream Pipeline",
-  "TensorRT Optimized Inference",
+  "DeepStream Pipeline",
+  "TensorRT Inference",
   "Edge Event Engine",
   "Operations Dashboard",
 ];
@@ -139,8 +139,8 @@ export const architecturePreviewSteps = [
   "Camera Streams",
   "RTSP Ingestion",
   "Jetson Edge AI Node",
-  "DeepStream Multi-Stream Pipeline",
-  "TensorRT Optimized Inference",
+  "DeepStream Pipeline",
+  "TensorRT Inference",
   "Edge Event Engine",
   "Operations Dashboard",
 ];

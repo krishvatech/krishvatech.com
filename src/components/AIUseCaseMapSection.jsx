@@ -24,8 +24,8 @@ const pipelineIconByLabel = {
   "Camera Streams": Camera,
   "RTSP Ingestion": Network,
   "Jetson Edge AI Node": Cog,
-  "DeepStream Multi-Stream Pipeline": Workflow,
-  "TensorRT Optimized Inference": Gauge,
+  "DeepStream Pipeline": Workflow,
+  "TensorRT Inference": Gauge,
   "Edge Event Engine": Activity,
   "Operations Dashboard": LayoutDashboard,
 };
