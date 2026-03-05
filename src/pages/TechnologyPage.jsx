@@ -2,15 +2,25 @@ import React from "react";
 import { motion } from "framer-motion";
 import { Cpu, Database, Network, Server } from "lucide-react";
 import {
-  architecturePreviewSteps,
   gpuVsCpuExecutionTable,
   inceptionStatement,
   nvidiaStack,
   technologyTopics,
 } from "../content/platformData";
-import { ArchitectureDiagram } from "../components/ArchitectureDiagram";
+import EdgeVisionVerticalPipeline from "../components/pipeline/EdgeVisionVerticalPipeline";
+import RuntimeStatusBar from "../components/RuntimeStatusBar";
 import { Container, fadeInUp, revealTransition, SectionTitle } from "../components/layout";
 import { PageHero } from "../components/PageHero";
+
+const technologyPipelineStages = [
+  "Camera Streams",
+  "RTSP Ingestion",
+  "Jetson Edge AI Node",
+  "DeepStream Pipeline",
+  "TensorRT GPU Inference",
+  "Edge Event Engine",
+  "Operations Dashboard",
+];
 
 export default function TechnologyPage() {
   return (
@@ -67,8 +77,9 @@ export default function TechnologyPage() {
             variants={fadeInUp}
             transition={revealTransition}
           >
-            <ArchitectureDiagram steps={architecturePreviewSteps} />
-            <pre className="code-block mt-7"><code>{`# EdgeVision runtime sequence\ncamera_streams -> rtsp_ingest -> jetson_node\n-> deepstream_multi_stream -> tensorrt_infer\n-> edge_event_engine -> operations_dashboard`}</code></pre>
+            <EdgeVisionVerticalPipeline stages={technologyPipelineStages} />
+            <RuntimeStatusBar className="mt-4" />
+            <pre className="code-block runtime-sequence-block mt-4"><code>{`# EdgeVision runtime sequence\ncamera_streams -> rtsp_ingest -> jetson_node\n-> deepstream_multi_stream -> tensorrt_infer\n-> edge_event_engine -> operations_dashboard`}</code></pre>
           </motion.article>
         </Container>
       </section>
