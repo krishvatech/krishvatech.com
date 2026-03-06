@@ -4,7 +4,6 @@ import { ArrowRight, Cpu } from "lucide-react";
 import {
   architecturePreviewSteps,
   gpuAdvantagePoints,
-  homeHeroBullets,
   nvidiaStack,
   platformCapabilities,
 } from "../content/platformData";
@@ -14,20 +13,57 @@ import EdgeNodeFlowCanvas from "../components/visuals/EdgeNodeFlowCanvas";
 import { Container, fadeInUp, revealTransition, SectionTitle } from "../components/layout";
 import { PageHero } from "../components/PageHero";
 
-const telemetryCards = [
-  { key: "activeJetsonNodes", label: "Active Jetson Nodes", target: 32 },
-  { key: "cameraStreams", label: "Camera Streams Processing", target: 184 },
-  { key: "gpuLatency", label: "GPU Inference Latency", target: 22, suffix: "ms" },
-  { key: "eventsDetected", label: "Events Detected Today", target: 1482 },
-  { key: "systemHealth", label: "System Health", value: "Operational" },
+const runtimeCards = [
+  { key: "activeEdgeNodes", label: "Active Edge Nodes", target: 24 },
+  { key: "cameraStreams", label: "Camera Streams Processing", target: 182 },
+  { key: "gpuUtilization", label: "GPU Utilization", target: 71, suffix: "%" },
+  { key: "eventsGenerated", label: "Events Generated Today", target: 1483 },
+  { key: "systemStatus", label: "System Status", value: "Operational" },
+];
+
+const deploymentSteps = [
+  {
+    number: "01",
+    title: "Connect Cameras",
+    description: "Attach RTSP camera streams or existing CCTV infrastructure.",
+  },
+  {
+    number: "02",
+    title: "Deploy Edge Node",
+    description: "Install EdgeVision runtime on NVIDIA Jetson edge devices.",
+  },
+  {
+    number: "03",
+    title: "Activate AI Pipeline",
+    description: "Enable AI detection models and start receiving real-time alerts.",
+  },
+];
+
+const nvidiaStackCards = [
+  {
+    title: "NVIDIA Jetson",
+    description: "Edge AI hardware platform powering real-time inference at the edge.",
+  },
+  {
+    title: "DeepStream SDK",
+    description: "High-performance multi-stream video analytics pipeline.",
+  },
+  {
+    title: "TensorRT",
+    description: "GPU-optimized deep learning inference engine.",
+  },
+  {
+    title: "CUDA / cuDNN",
+    description: "Accelerated computing libraries enabling high-performance workloads.",
+  },
 ];
 
 export default function HomePage() {
-  const [telemetryValues, setTelemetryValues] = useState({
-    activeJetsonNodes: 0,
+  const [runtimeValues, setRuntimeValues] = useState({
+    activeEdgeNodes: 0,
     cameraStreams: 0,
-    gpuLatency: 0,
-    eventsDetected: 0,
+    gpuUtilization: 0,
+    eventsGenerated: 0,
   });
 
   useEffect(() => {
@@ -39,11 +75,11 @@ export default function HomePage() {
       const progress = Math.min((now - start) / duration, 1);
       const eased = 1 - (1 - progress) ** 3;
 
-      setTelemetryValues({
-        activeJetsonNodes: Math.round(32 * eased),
-        cameraStreams: Math.round(184 * eased),
-        gpuLatency: Math.round(22 * eased),
-        eventsDetected: Math.round(1482 * eased),
+      setRuntimeValues({
+        activeEdgeNodes: Math.round(24 * eased),
+        cameraStreams: Math.round(182 * eased),
+        gpuUtilization: Math.round(71 * eased),
+        eventsGenerated: Math.round(1483 * eased),
       });
 
       if (progress < 1) {
@@ -58,41 +94,74 @@ export default function HomePage() {
   return (
     <>
       <PageHero
-        eyebrow="GPU-Native Industrial AI"
-        title="GPU-Accelerated Edge AI Infrastructure for Industrial Intelligence"
-        subtitle="KrishvaTech EdgeVision Platform is now in private beta, built on NVIDIA Jetson, DeepStream, TensorRT, and CUDA for multi-camera RTSP ingestion and multi-stream inference pipelines on an edge AI runtime."
-        positioningLine="KrishvaTech builds GPU-accelerated edge AI infrastructure that enables real-time industrial computer vision systems."
-        bullets={homeHeroBullets}
+        title="GPU-Accelerated Edge AI Infrastructure"
+        subheadline="for Real-Time Industrial Intelligence"
+        techLine="Built on NVIDIA Jetson, DeepStream & TensorRT"
+        description="Deploy multi-stream computer vision pipelines at the edge with real-time GPU inference and event-driven automation."
+        credibilityLine="Designed for multi-stream video analytics, edge inference, and scalable industrial AI deployments."
+        showArchitectureVisualization
         actions={
           <>
-            <a href="/contact" className="btn-primary">
-              Contact Us for Beta Access <ArrowRight size={17} />
-            </a>
             <a href="/platform#architecture-diagram" className="btn-secondary">
               Explore Architecture
             </a>
-            <a href="/technology" className="btn-secondary">
-              Technical Deep Dive
+            <a href="/contact" className="btn-primary">
+              Request Platform Demo <ArrowRight size={17} />
             </a>
           </>
         }
       />
 
-      <section className="telemetry-section" id="edge-platform-telemetry">
+      <section className="runtime-section" id="edgevision-platform-runtime">
         <Container>
-          <h2 className="telemetry-title">Edge Platform Telemetry</h2>
-          <div className="telemetry-container" aria-label="Edge platform telemetry">
-            {telemetryCards.map((metric) => (
-              <article className="telemetry-card" key={metric.key}>
-                <p className="telemetry-value">
+          <h2 className="runtime-title">EdgeVision Platform Runtime</h2>
+          <div className="runtime-grid" aria-label="EdgeVision platform runtime telemetry">
+            {runtimeCards.map((metric) => (
+              <article className="runtime-card" key={metric.key}>
+                <p className="runtime-value">
                   {typeof metric.target === "number"
-                    ? `${telemetryValues[metric.key] ?? 0}${metric.suffix || ""}`
+                    ? `${runtimeValues[metric.key] ?? 0}${metric.suffix || ""}`
                     : metric.value}
                 </p>
-                <p className="telemetry-label">{metric.label}</p>
+                <p className="runtime-label">{metric.label}</p>
               </article>
             ))}
           </div>
+        </Container>
+      </section>
+
+      <section className="steps-section" id="deploy-edgevision">
+        <Container>
+          <h2 className="steps-title">Deploy EdgeVision in 3 Steps</h2>
+          <div className="steps-grid" aria-label="Deploy EdgeVision in 3 steps">
+            {deploymentSteps.map((step) => (
+              <article className="steps-card" key={step.number}>
+                <p className="steps-number">Step {step.number}</p>
+                <h3 className="steps-card-title">{step.title}</h3>
+                <p className="steps-description">{step.description}</p>
+              </article>
+            ))}
+          </div>
+          <div className="steps-cta">
+            <a href="/contact" className="btn-primary">Request Platform Demo</a>
+          </div>
+        </Container>
+      </section>
+
+      <section className="stack-section" id="nvidia-accelerated-stack">
+        <Container>
+          <h2 className="stack-title">Built on the NVIDIA Accelerated Computing Stack</h2>
+          <div className="stack-grid" aria-label="NVIDIA accelerated computing stack">
+            {nvidiaStackCards.map((item) => (
+              <article className="stack-card" key={item.title}>
+                <h3 className="stack-card-title">{item.title}</h3>
+                <p className="stack-card-description">{item.description}</p>
+              </article>
+            ))}
+          </div>
+          <p className="stack-note">
+            KrishvaTech is preparing its application to the NVIDIA Inception program to further scale its GPU-accelerated EdgeVision platform.
+          </p>
         </Container>
       </section>
 
