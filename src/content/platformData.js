@@ -139,8 +139,8 @@ export const architecturePreviewSteps = [
   "Camera Streams",
   "RTSP Ingestion",
   "Jetson Edge AI Node",
-  "DeepStream Pipeline",
-  "TensorRT Inference",
+  "DeepStream Multi-Stream Pipeline",
+  "TensorRT GPU Inference",
   "Edge Event Engine",
   "Operations Dashboard",
 ];
