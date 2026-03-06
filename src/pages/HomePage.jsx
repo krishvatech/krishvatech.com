@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { ArrowRight, Cpu } from "lucide-react";
 import {
@@ -14,7 +14,47 @@ import EdgeNodeFlowCanvas from "../components/visuals/EdgeNodeFlowCanvas";
 import { Container, fadeInUp, revealTransition, SectionTitle } from "../components/layout";
 import { PageHero } from "../components/PageHero";
 
+const telemetryCards = [
+  { key: "activeJetsonNodes", label: "Active Jetson Nodes", target: 32 },
+  { key: "cameraStreams", label: "Camera Streams Processing", target: 184 },
+  { key: "gpuLatency", label: "GPU Inference Latency", target: 22, suffix: "ms" },
+  { key: "eventsDetected", label: "Events Detected Today", target: 1482 },
+  { key: "systemHealth", label: "System Health", value: "Operational" },
+];
+
 export default function HomePage() {
+  const [telemetryValues, setTelemetryValues] = useState({
+    activeJetsonNodes: 0,
+    cameraStreams: 0,
+    gpuLatency: 0,
+    eventsDetected: 0,
+  });
+
+  useEffect(() => {
+    let raf = 0;
+    const duration = 1200;
+    const start = performance.now();
+
+    const animate = (now) => {
+      const progress = Math.min((now - start) / duration, 1);
+      const eased = 1 - (1 - progress) ** 3;
+
+      setTelemetryValues({
+        activeJetsonNodes: Math.round(32 * eased),
+        cameraStreams: Math.round(184 * eased),
+        gpuLatency: Math.round(22 * eased),
+        eventsDetected: Math.round(1482 * eased),
+      });
+
+      if (progress < 1) {
+        raf = window.requestAnimationFrame(animate);
+      }
+    };
+
+    raf = window.requestAnimationFrame(animate);
+    return () => window.cancelAnimationFrame(raf);
+  }, []);
+
   return (
     <>
       <PageHero
@@ -37,6 +77,24 @@ export default function HomePage() {
           </>
         }
       />
+
+      <section className="telemetry-section" id="edge-platform-telemetry">
+        <Container>
+          <h2 className="telemetry-title">Edge Platform Telemetry</h2>
+          <div className="telemetry-container" aria-label="Edge platform telemetry">
+            {telemetryCards.map((metric) => (
+              <article className="telemetry-card" key={metric.key}>
+                <p className="telemetry-value">
+                  {typeof metric.target === "number"
+                    ? `${telemetryValues[metric.key] ?? 0}${metric.suffix || ""}`
+                    : metric.value}
+                </p>
+                <p className="telemetry-label">{metric.label}</p>
+              </article>
+            ))}
+          </div>
+        </Container>
+      </section>
 
       <section className="section-shell" id="edgevision-platform">
         <Container>

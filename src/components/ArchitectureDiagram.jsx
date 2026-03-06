@@ -23,7 +23,13 @@ export const ArchitectureDiagram = ({ steps = defaultArchitectureSteps, classNam
           >
             {step}
           </div>
-          {index < safeSteps.length - 1 ? <div className="arch-arrow" aria-hidden="true">↓</div> : null}
+          {index < safeSteps.length - 1 ? (
+            <div className="pipeline-line" aria-hidden="true">
+              <span className="packet" />
+              <span className="packet" />
+              <span className="packet" />
+            </div>
+          ) : null}
         </React.Fragment>
       ))}
     </div>
