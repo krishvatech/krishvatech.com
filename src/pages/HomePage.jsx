@@ -9,6 +9,7 @@ import {
 } from "../content/platformData";
 import { AIUseCaseMapSection } from "../components/AIUseCaseMapSection";
 import { ArchitectureDiagram } from "../components/ArchitectureDiagram";
+import { NvidiaInceptionBadge } from "../components/NvidiaInceptionBadge";
 import EdgeNodeFlowCanvas from "../components/visuals/EdgeNodeFlowCanvas";
 import { Container, fadeInUp, revealTransition, SectionTitle } from "../components/layout";
 import { PageHero } from "../components/PageHero";
@@ -111,6 +112,8 @@ export default function HomePage() {
           </>
         }
       />
+
+      <NvidiaInceptionBadge />
 
       <section className="runtime-section" id="edgevision-platform-runtime">
         <Container>
