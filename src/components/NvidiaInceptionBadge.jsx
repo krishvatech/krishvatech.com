@@ -14,11 +14,12 @@ export const NvidiaInceptionBadge = () => (
           rel="noreferrer"
           aria-label="Open NVIDIA Inception Program page"
         >
-          <span className="nvidia-badge-mark" aria-hidden="true">NV</span>
-          <span className="nvidia-badge-text">
-            <strong>NVIDIA Inception Program</strong>
-            <span>Member Recognition</span>
-          </span>
+          <img
+            className="nvidia-badge-image"
+            src="https://cdn.prod.website-files.com/68669c4fd29af60dfdd79833/6868063d7cf297ee9df4102d_nvidia-inception-program-badge-rgb-for-screen%201.svg"
+            alt="NVIDIA Inception Program Badge"
+            loading="lazy"
+          />
         </a>
 
         <p className="nvidia-trust-description">

@@ -465,11 +465,11 @@ a {
   margin-top: 0.95rem;
   display: inline-flex;
   align-items: center;
-  gap: 0.72rem;
-  border-radius: 999px;
+  justify-content: center;
+  border-radius: 0.9rem;
   border: 1px solid rgba(120, 255, 120, 0.34);
   background: rgba(10, 18, 34, 0.88);
-  padding: 0.52rem 0.88rem 0.52rem 0.52rem;
+  padding: 0.55rem 0.8rem;
   transition: border-color 160ms ease, transform 160ms ease, box-shadow 160ms ease;
 }
 
@@ -479,36 +479,11 @@ a {
   box-shadow: 0 8px 22px rgba(118, 185, 0, 0.2);
 }
 
-.nvidia-badge-mark {
-  width: 2.1rem;
-  height: 2.1rem;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 999px;
-  background: linear-gradient(135deg, #76b900, #9ee031);
-  color: #102100;
-  font-size: 0.72rem;
-  font-weight: 800;
-  letter-spacing: 0.06em;
-}
-
-.nvidia-badge-text {
-  display: grid;
-  gap: 0.08rem;
-  text-align: left;
-}
-
-.nvidia-badge-text strong {
-  font-size: 0.82rem;
-  color: #e6f8c3;
-  line-height: 1.2;
-}
-
-.nvidia-badge-text span {
-  font-size: 0.72rem;
-  color: #b7caec;
-  line-height: 1.2;
+.nvidia-badge-image {
+  display: block;
+  width: clamp(12rem, 42vw, 21rem);
+  max-width: 100%;
+  height: auto;
 }
 
 .nvidia-trust-description {
